@@ -1,20 +1,27 @@
-# RET Business Group Website
+# RET Business Group Website - Foundation
 
-Professional corporate website for Royal Ever True (RET) Business Group and its subsidiaries.
+**This is the foundational codebase for Royal Ever True (RET) Business Group** - a modern, scalable corporate website platform designed as the foundation for future expansion and growth.
+
+Professional corporate website for Royal Ever True (RET) Business Group and its subsidiaries, featuring a unified project management system, modern UI/UX design, and comprehensive admin tools.
 
 ## Features
 
 ### Client-Facing Pages
-- **Group Landing Page**: Overview of RET Business Group with History, Legal Documents, and Organizational Structure
-- **RET Advertising**: Portfolio showcase with 6 categories (Vehicle Branding, Signboards, Production, Merchandising, Events, CSR) and client logos
-- **Million Zone**: Construction and infrastructure services with ongoing work gallery
-- **Inner True**: Distribution and logistics services
+- **Group Landing Page**: Overview of RET Business Group with History, Mission, Vision, Legal Documents, and Organizational Structure
+- **RET Advertising**: Portfolio showcase with category filtering (Nationwide Merchandising, Event Management, Building Paint Branding, Vehicle Branding, Signage)
+- **Million Zone**: Construction and infrastructure services with project status tracking (Ongoing/Finished)
+- **Inner True**: Distribution and logistics services (Telecom, Online Money, FMCG)
 - **Agricultural Friends**: Agricultural services overview
 
 ### Admin Dashboard
-- **Project Management**: Upload and manage portfolio projects with photos and descriptions
+- **Project Management**: 
+  - Upload and manage portfolio projects with photos and descriptions
+  - Status tracking (Ongoing, Finished, Unknown) for all subsidiaries
+  - Category management for RET Advertising projects
+  - Image preservation when editing (no need to re-upload)
 - **Client Management**: Categorize and manage client logos (Contract, Campaign, Sector Clients)
-- **Site Settings**: Update corporate information including Mission, Vision, History, and Office Address
+- **Legal Documents**: Upload and manage certificates, licenses, and legal documents
+- **Site Settings**: Update corporate information including Mission, Vision, History, Core Values, Attitude, and Organization Chart
 
 ## Tech Stack
 
@@ -68,6 +75,7 @@ CREATE TABLE IF NOT EXISTS `Project` (
   `category` VARCHAR(191) NOT NULL,
   `imageUrl` VARCHAR(512) NOT NULL,
   `subsidiary` VARCHAR(191) NULL,
+  `status` VARCHAR(191) DEFAULT 'unknown',
   `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
   `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
   PRIMARY KEY (`id`)
@@ -144,11 +152,25 @@ npm run dev
 
 ## Database Schema
 
-- **Project**: Portfolio projects with categories and subsidiaries
+- **Project**: Portfolio projects with categories, subsidiaries, and status (ongoing/finished/unknown)
 - **Client**: Client logos with categories (Contract, Campaign, Sector)
-- **site_settings**: Key-value settings for Mission, Vision, History, Address
+- **site_settings**: Key-value settings for Mission, Vision, History, Core Values, Attitude, Organization Chart
 - **LegalDocument**: Legal documents and certificates
-- **ConstructionProject**: Ongoing construction projects
+- **ConstructionProject**: Construction projects with status and location
+
+### Migration: Adding Status Column
+
+If you have an existing database, run this migration to add the `status` column to the Project table:
+
+```sql
+ALTER TABLE `Project` 
+ADD COLUMN `status` VARCHAR(191) NULL DEFAULT 'unknown' 
+AFTER `subsidiary`;
+
+UPDATE `Project` SET `status` = 'unknown' WHERE `status` IS NULL;
+```
+
+See `migrations/add_status_to_project.sql` for the migration script.
 
 ## Admin Access
 
