@@ -1,23 +1,25 @@
 import Breadcrumbs from '@/components/Breadcrumbs'
 import Image from 'next/image'
 import { query } from '@/lib/db'
+import ScrollAnimation from '@/components/ScrollAnimation'
 
-interface ConstructionProject {
+interface Project {
   id: string
   title: string
   description: string | null
+  category: string
   imageUrl: string
-  status: string
-  location: string | null
+  subsidiary: string | null
+  status: string | null
   createdAt: Date
   updatedAt: Date
 }
 
-async function getConstructionProjects(): Promise<ConstructionProject[]> {
+async function getProjects(): Promise<Project[]> {
   try {
-    return await query<ConstructionProject[]>(
-      'SELECT id, title, description, imageUrl, status, location, createdAt, updatedAt FROM ConstructionProject WHERE status = :status ORDER BY createdAt DESC',
-      { status: 'Ongoing' }
+    return await query<Project[]>(
+      'SELECT id, title, description, category, imageUrl, subsidiary, status, createdAt, updatedAt FROM Project WHERE subsidiary = :subsidiary ORDER BY createdAt DESC',
+      { subsidiary: 'Million Zone' }
     )
   } catch (error) {
     return []
@@ -25,7 +27,7 @@ async function getConstructionProjects(): Promise<ConstructionProject[]> {
 }
 
 export default async function MillionZonePage() {
-  const ongoingProjects = await getConstructionProjects()
+  const projects = await getProjects()
 
   return (
     <div>
@@ -62,51 +64,57 @@ export default async function MillionZonePage() {
         </div>
       </section>
 
-      {/* Ongoing Work */}
-      <section className="py-16 bg-gray-50">
+      {/* Our Projects */}
+      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12">Ongoing Work</h2>
+          <ScrollAnimation direction="up" delay={100}>
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold mb-4 gradient-text">Our Projects</h2>
+              <div className="w-24 h-1 bg-gradient-to-r from-green-500 to-green-600 mx-auto rounded-full"></div>
+            </div>
+          </ScrollAnimation>
           
-          {ongoingProjects.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {ongoingProjects.map((project) => (
-                <div
-                  key={project.id}
-                  className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow"
-                >
-                  <div className="relative h-64 w-full">
-                    <Image
-                      src={project.imageUrl || 'https://via.placeholder.com/600x400?text=Construction+Site'}
-                      alt={project.title}
-                      fill
-                      className="object-cover"
-                    />
-                    <div className="absolute top-4 right-4">
-                      <span className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
-                        Ongoing
-                      </span>
+          {projects.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {projects.map((project, index) => (
+                <ScrollAnimation key={project.id} direction="up" delay={100 + index * 50}>
+                  <div className="card-modern bg-white overflow-hidden group hover-lift">
+                    <div className="relative h-64 w-full overflow-hidden">
+                      <Image
+                        src={project.imageUrl || 'https://via.placeholder.com/600x400?text=Project+Image'}
+                        alt={project.title}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                      {project.status && (
+                        <div className="absolute top-4 right-4 z-10">
+                          <span className={`px-3 py-1 rounded-full text-xs font-semibold shadow-md ${
+                            project.status === 'ongoing' 
+                              ? 'bg-green-600 text-white' 
+                              : project.status === 'finished' 
+                              ? 'bg-gray-600 text-white'
+                              : 'bg-gray-400 text-white'
+                          }`}>
+                            {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-6">
+                      <h3 className="text-xl font-semibold mb-3 text-gray-800">
+                        {project.title}
+                      </h3>
+                      {project.description && (
+                        <p className="text-gray-700 leading-relaxed">{project.description}</p>
+                      )}
                     </div>
                   </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
-                    {project.location && (
-                      <p className="text-gray-600 text-sm mb-3">
-                        <svg className="inline-block w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                        </svg>
-                        {project.location}
-                      </p>
-                    )}
-                    {project.description && (
-                      <p className="text-gray-700">{project.description}</p>
-                    )}
-                  </div>
-                </div>
+                </ScrollAnimation>
               ))}
             </div>
           ) : (
             <div className="text-center py-12">
-              <p className="text-gray-500">No ongoing projects to display at this time. Check back soon!</p>
+              <p className="text-gray-500">No projects to display at this time. Check back soon!</p>
             </div>
           )}
         </div>

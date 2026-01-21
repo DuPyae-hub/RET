@@ -92,18 +92,18 @@ export default function ClientShowcase() {
           </div>
         ) : filteredClients.length > 0 ? (
           /* Logo Grid */
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
             {filteredClients.map((client) => (
               <div
                 key={client.id}
-                className="bg-white p-4 rounded-lg border-2 border-gray-200 flex items-center justify-center h-32 hover:border-primary-500 hover:shadow-lg transition-all duration-300 transform hover:scale-105 group"
+                className="bg-white p-4 rounded-xl border border-gray-200 flex items-center justify-center h-28 md:h-32 hover:border-primary-500 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 group cursor-pointer"
               >
-                <div className="relative w-full h-full grayscale group-hover:grayscale-0 transition-all duration-300">
+                <div className="relative w-full h-full grayscale group-hover:grayscale-0 transition-all duration-500 opacity-70 group-hover:opacity-100">
                   <Image
                     src={client.logoUrl || 'https://via.placeholder.com/150x100?text=Client+Logo'}
                     alt={client.name}
                     fill
-                    className="object-contain"
+                    className="object-contain p-2"
                     sizes="(max-width: 768px) 50vw, (max-width: 1024px) 25vw, 16vw"
                   />
                 </div>

@@ -1,6 +1,33 @@
 import Breadcrumbs from '@/components/Breadcrumbs'
+import Image from 'next/image'
+import { query } from '@/lib/db'
+import ScrollAnimation from '@/components/ScrollAnimation'
 
-export default function AgriculturalFriendsPage() {
+interface Project {
+  id: string
+  title: string
+  description: string | null
+  category: string
+  imageUrl: string
+  subsidiary: string | null
+  status: string | null
+  createdAt: Date
+  updatedAt: Date
+}
+
+async function getProjects(): Promise<Project[]> {
+  try {
+    return await query<Project[]>(
+      'SELECT id, title, description, category, imageUrl, subsidiary, status, createdAt, updatedAt FROM Project WHERE subsidiary = :subsidiary ORDER BY createdAt DESC',
+      { subsidiary: 'Agricultural Friends' }
+    )
+  } catch (error) {
+    return []
+  }
+}
+
+export default async function AgriculturalFriendsPage() {
+  const projects = await getProjects()
   return (
     <div>
       <Breadcrumbs
@@ -80,6 +107,62 @@ export default function AgriculturalFriendsPage() {
               <p className="text-gray-600 text-sm">Connecting farmers to markets</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Our Projects */}
+      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <ScrollAnimation direction="up" delay={100}>
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold mb-4 gradient-text">Our Projects</h2>
+              <div className="w-24 h-1 bg-gradient-to-r from-yellow-500 to-yellow-600 mx-auto rounded-full"></div>
+            </div>
+          </ScrollAnimation>
+          
+          {projects.length > 0 ? (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {projects.map((project, index) => (
+                <ScrollAnimation key={project.id} direction="up" delay={100 + index * 50}>
+                  <div className="card-modern bg-white overflow-hidden group hover-lift">
+                    <div className="relative h-64 w-full overflow-hidden">
+                      <Image
+                        src={project.imageUrl || 'https://via.placeholder.com/600x400?text=Project+Image'}
+                        alt={project.title}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                      {project.status && (
+                        <div className="absolute top-4 right-4 z-10">
+                          <span className={`px-3 py-1 rounded-full text-xs font-semibold shadow-md ${
+                            project.status === 'ongoing' 
+                              ? 'bg-yellow-600 text-white' 
+                              : project.status === 'finished' 
+                              ? 'bg-gray-600 text-white'
+                              : 'bg-gray-400 text-white'
+                          }`}>
+                            {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-6">
+                      <h3 className="text-xl font-semibold mb-3 text-gray-800">
+                        {project.title}
+                      </h3>
+                      {project.description && (
+                        <p className="text-gray-700 leading-relaxed">{project.description}</p>
+                      )}
+                    </div>
+                  </div>
+                </ScrollAnimation>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-gray-500">No projects to display at this time. Check back soon!</p>
+            </div>
+          )}
         </div>
       </section>
 

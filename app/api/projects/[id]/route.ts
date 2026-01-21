@@ -7,7 +7,7 @@ export async function GET(
 ) {
   try {
     const rows = await query(
-      'SELECT id, title, description, category, imageUrl, subsidiary, createdAt, updatedAt FROM Project WHERE id = :id LIMIT 1',
+      'SELECT id, title, description, category, imageUrl, subsidiary, status, createdAt, updatedAt FROM Project WHERE id = :id LIMIT 1',
       { id: params.id }
     )
     const project = (rows as any[])[0]
@@ -31,7 +31,12 @@ export async function PUT(
 ) {
   try {
     const body = await request.json()
-    const { title, description, category, imageUrl, subsidiary } = body
+    const { title, description, category, imageUrl, subsidiary, status } = body
+
+    // Only set category if subsidiary is RET Advertising, otherwise use empty string
+    const categoryValue = subsidiary === 'RET Advertising' ? category : ''
+    // Set status for all subsidiaries
+    const statusValue = status || 'unknown'
 
     await query(
       `UPDATE Project
@@ -40,20 +45,22 @@ export async function PUT(
            category = :category,
            imageUrl = :imageUrl,
            subsidiary = :subsidiary,
+           status = :status,
            updatedAt = NOW(3)
        WHERE id = :id`,
       {
         id: params.id,
         title,
         description: description || null,
-        category,
+        category: categoryValue,
         imageUrl,
         subsidiary: subsidiary || null,
+        status: statusValue,
       }
     )
 
     const rows = await query(
-      'SELECT id, title, description, category, imageUrl, subsidiary, createdAt, updatedAt FROM Project WHERE id = :id LIMIT 1',
+      'SELECT id, title, description, category, imageUrl, subsidiary, status, createdAt, updatedAt FROM Project WHERE id = :id LIMIT 1',
       { id: params.id }
     )
     const updated = (rows as any[])[0]

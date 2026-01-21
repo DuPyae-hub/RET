@@ -151,6 +151,7 @@ CREATE TABLE `Project` (
   `category` varchar(191) NOT NULL,
   `imageUrl` varchar(512) NOT NULL,
   `subsidiary` varchar(191) DEFAULT NULL,
+  `status` varchar(191) DEFAULT 'unknown',
   `createdAt` datetime(3) NOT NULL DEFAULT current_timestamp(3),
   `updatedAt` datetime(3) NOT NULL DEFAULT current_timestamp(3) ON UPDATE current_timestamp(3)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

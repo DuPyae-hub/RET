@@ -2,6 +2,7 @@ import Breadcrumbs from '@/components/Breadcrumbs'
 import Link from 'next/link'
 import Image from 'next/image'
 import { query } from '@/lib/db'
+import ScrollAnimation from '@/components/ScrollAnimation'
 
 const portfolioCategories = [
   'Nationwide Merchandising',
@@ -15,23 +16,12 @@ async function getProjects(category?: string) {
   try {
     if (category && category !== 'All') {
       return await query(
-        'SELECT id, title, description, category, imageUrl, subsidiary, createdAt, updatedAt FROM Project WHERE subsidiary = :subsidiary AND category = :category ORDER BY createdAt DESC',
+        'SELECT id, title, description, category, imageUrl, subsidiary, status, createdAt, updatedAt FROM Project WHERE subsidiary = :subsidiary AND category = :category ORDER BY createdAt DESC',
         { subsidiary: 'RET Advertising', category }
       )
     }
     return await query(
-      'SELECT id, title, description, category, imageUrl, subsidiary, createdAt, updatedAt FROM Project WHERE subsidiary = :subsidiary ORDER BY createdAt DESC',
-      { subsidiary: 'RET Advertising' }
-    )
-  } catch (error) {
-    return []
-  }
-}
-
-async function getClients() {
-  try {
-    return await query(
-      'SELECT id, name, logoUrl, category, subsidiary, createdAt, updatedAt FROM Client WHERE subsidiary = :subsidiary ORDER BY createdAt DESC',
+      'SELECT id, title, description, category, imageUrl, subsidiary, status, createdAt, updatedAt FROM Project WHERE subsidiary = :subsidiary ORDER BY createdAt DESC',
       { subsidiary: 'RET Advertising' }
     )
   } catch (error) {
@@ -46,11 +36,6 @@ export default async function RETAdvertisingPage({
 }) {
   const category = searchParams.category || 'All'
   const projects = await getProjects(category === 'All' ? undefined : category)
-  const clients = await getClients()
-
-  const contractClients = clients.filter((c) => c.category === 'Contract Clients')
-  const campaignClients = clients.filter((c) => c.category === 'Campaign Clients')
-  const sectorClients = clients.filter((c) => c.category === 'Sector Clients')
 
   return (
     <div>
@@ -105,28 +90,48 @@ export default async function RETAdvertisingPage({
 
           {/* Project Grid */}
           {projects.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {projects.map((project) => (
-                <div
-                  key={project.id}
-                  className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
-                >
-                  <div className="relative h-64 w-full">
-                    <Image
-                      src={project.imageUrl || 'https://via.placeholder.com/400x300?text=Project+Image'}
-                      alt={project.title}
-                      fill
-                      className="object-cover"
-                    />
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+              {projects.map((project, index) => (
+                <ScrollAnimation key={project.id} direction="up" delay={100 + index * 50}>
+                  <div className="card-modern bg-white overflow-hidden group hover-lift">
+                    <div className="relative h-64 w-full overflow-hidden">
+                      <Image
+                        src={project.imageUrl || 'https://via.placeholder.com/400x300?text=Project+Image'}
+                        alt={project.title}
+                        fill
+                        className="object-cover group-hover:scale-110 transition-transform duration-500"
+                      />
+                      {project.status && (
+                        <div className="absolute top-4 right-4 z-10">
+                          <span className={`px-3 py-1 rounded-full text-xs font-semibold shadow-md ${
+                            project.status === 'ongoing' 
+                              ? 'bg-blue-600 text-white' 
+                              : project.status === 'finished' 
+                              ? 'bg-gray-600 text-white'
+                              : 'bg-gray-400 text-white'
+                          }`}>
+                            {project.status.charAt(0).toUpperCase() + project.status.slice(1)}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-5 md:p-6">
+                      {project.category && (
+                        <span className="text-xs font-semibold text-primary-600 uppercase bg-primary-50 px-3 py-1 rounded-full inline-block mb-3">
+                          {project.category}
+                        </span>
+                      )}
+                      <h3 className="text-lg md:text-xl font-semibold mb-3 text-gray-800">
+                        {project.title}
+                      </h3>
+                      {project.description && (
+                        <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
+                          {project.description}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                  <div className="p-4">
-                    <span className="text-xs font-semibold text-primary-600 uppercase">{project.category}</span>
-                    <h3 className="text-lg font-semibold mt-2 mb-2">{project.title}</h3>
-                    {project.description && (
-                      <p className="text-gray-600 text-sm line-clamp-2">{project.description}</p>
-                    )}
-                  </div>
-                </div>
+                </ScrollAnimation>
               ))}
             </div>
           ) : (
@@ -137,87 +142,6 @@ export default async function RETAdvertisingPage({
         </div>
       </section>
 
-      {/* Client Logos */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12">Our Clients</h2>
-
-          {/* Contract Clients */}
-          {contractClients.length > 0 && (
-            <div className="mb-12">
-              <h3 className="text-xl font-semibold mb-6 text-gray-800">Contract Clients</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-                {contractClients.map((client) => (
-                  <div
-                    key={client.id}
-                    className="bg-white p-4 rounded-lg border border-gray-200 flex items-center justify-center h-32 hover:shadow-md transition-shadow"
-                  >
-                    <Image
-                      src={client.logoUrl || 'https://via.placeholder.com/150x100?text=Client+Logo'}
-                      alt={client.name}
-                      width={120}
-                      height={80}
-                      className="object-contain"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Campaign Clients */}
-          {campaignClients.length > 0 && (
-            <div className="mb-12">
-              <h3 className="text-xl font-semibold mb-6 text-gray-800">Campaign Clients</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-                {campaignClients.map((client) => (
-                  <div
-                    key={client.id}
-                    className="bg-white p-4 rounded-lg border border-gray-200 flex items-center justify-center h-32 hover:shadow-md transition-shadow"
-                  >
-                    <Image
-                      src={client.logoUrl || 'https://via.placeholder.com/150x100?text=Client+Logo'}
-                      alt={client.name}
-                      width={120}
-                      height={80}
-                      className="object-contain"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Sector Clients */}
-          {sectorClients.length > 0 && (
-            <div>
-              <h3 className="text-xl font-semibold mb-6 text-gray-800">Sector Clients</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
-                {sectorClients.map((client) => (
-                  <div
-                    key={client.id}
-                    className="bg-white p-4 rounded-lg border border-gray-200 flex items-center justify-center h-32 hover:shadow-md transition-shadow"
-                  >
-                    <Image
-                      src={client.logoUrl || 'https://via.placeholder.com/150x100?text=Client+Logo'}
-                      alt={client.name}
-                      width={120}
-                      height={80}
-                      className="object-contain"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {contractClients.length === 0 && campaignClients.length === 0 && sectorClients.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-gray-500">Client information coming soon!</p>
-            </div>
-          )}
-        </div>
-      </section>
     </div>
   )
 }

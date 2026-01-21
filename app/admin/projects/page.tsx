@@ -12,6 +12,7 @@ interface Project {
   category: string
   imageUrl: string
   subsidiary: string | null
+  status?: string | null
 }
 
 const categories = [
@@ -44,6 +45,7 @@ export default function AdminProjectsPage() {
     category: 'Nationwide Merchandising',
     imageUrl: '',
     subsidiary: 'RET Advertising',
+    status: 'ongoing',
   })
   const [uploading, setUploading] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
@@ -131,15 +133,19 @@ export default function AdminProjectsPage() {
     e.preventDefault()
     setFormMessage(null)
 
-    // Upload image if a new file is selected
+    // Upload image only if a new file is selected
     let imageUrl = formData.imageUrl
     if (selectedFile) {
       const uploadedUrl = await handleUpload()
       if (!uploadedUrl) return // Error already shown
       imageUrl = uploadedUrl
+    } else if (editingProject && !imageUrl) {
+      // If editing and no new file selected, use the existing project's imageUrl
+      imageUrl = editingProject.imageUrl
     }
 
-    if (!imageUrl) {
+    // Only require image for new projects, not when editing (if editing, keep existing image)
+    if (!imageUrl && !editingProject) {
       setFormMessage({ type: 'error', text: 'Please upload an image or provide an image URL' })
       return
     }
@@ -148,10 +154,24 @@ export default function AdminProjectsPage() {
       const url = editingProject ? `/api/projects/${editingProject.id}` : '/api/projects'
       const method = editingProject ? 'PUT' : 'POST'
 
+      // Only include category if subsidiary is RET Advertising
+      // Include status for all subsidiaries
+      const payload: any = {
+        title: formData.title,
+        description: formData.description,
+        imageUrl,
+        subsidiary: formData.subsidiary,
+        status: formData.status,
+      }
+      
+      if (formData.subsidiary === 'RET Advertising') {
+        payload.category = formData.category
+      }
+
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...formData, imageUrl }),
+        body: JSON.stringify(payload),
       })
 
       if (res.ok) {
@@ -184,6 +204,7 @@ export default function AdminProjectsPage() {
       category: project.category,
       imageUrl: project.imageUrl,
       subsidiary: project.subsidiary || 'RET Advertising',
+      status: project.status || 'ongoing',
     })
     setShowForm(true)
   }
@@ -208,6 +229,7 @@ export default function AdminProjectsPage() {
       category: 'Vehicle Branding',
       imageUrl: '',
       subsidiary: 'RET Advertising',
+      status: 'ongoing',
     })
     setEditingProject(null)
     setShowForm(false)
@@ -281,24 +303,18 @@ export default function AdminProjectsPage() {
               </div>
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                  <select
-                    value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2"
-                  >
-                    {categories.map((cat) => (
-                      <option key={cat} value={cat}>
-                        {cat}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Subsidiary</label>
                   <select
                     value={formData.subsidiary}
-                    onChange={(e) => setFormData({ ...formData, subsidiary: e.target.value })}
+                    onChange={(e) => {
+                      const newSubsidiary = e.target.value
+                      setFormData({ 
+                        ...formData, 
+                        subsidiary: newSubsidiary,
+                        // Clear category if not RET Advertising
+                        category: newSubsidiary === 'RET Advertising' ? formData.category : ''
+                      })
+                    }}
                     className="w-full border border-gray-300 rounded-md px-3 py-2"
                   >
                     {subsidiaries.map((sub) => (
@@ -308,10 +324,40 @@ export default function AdminProjectsPage() {
                     ))}
                   </select>
                 </div>
+                {formData.subsidiary === 'RET Advertising' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                    <select
+                      value={formData.category}
+                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                      className="w-full border border-gray-300 rounded-md px-3 py-2"
+                    >
+                      {categories.map((cat) => (
+                        <option key={cat} value={cat}>
+                          {cat}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <select
+                    value={formData.status}
+                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                    className="w-full border border-gray-300 rounded-md px-3 py-2"
+                  >
+                    <option value="ongoing">Ongoing</option>
+                    <option value="finished">Finished</option>
+                    <option value="unknown">Unknown</option>
+                  </select>
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Image {selectedFile ? '(File Selected)' : '(Upload from Device)'}
+                  Image {selectedFile ? '(New File Selected)' : editingProject ? '(Optional - Upload New Image)' : '(Upload from Device)'}
                 </label>
                 <input
                   type="file"
@@ -319,6 +365,11 @@ export default function AdminProjectsPage() {
                   onChange={handleFileChange}
                   className="w-full border border-gray-300 rounded-md px-3 py-2"
                 />
+                {editingProject && !selectedFile && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    ⓘ Leave empty to keep the current image
+                  </p>
+                )}
                 {previewUrl && (
                   <div className="mt-3">
                     <Image
@@ -343,15 +394,22 @@ export default function AdminProjectsPage() {
                   </div>
                 )}
                 <p className="text-xs text-gray-500 mt-2">
-                  Or provide an image URL (optional if uploading file):
+                  {editingProject 
+                    ? 'Leave empty to keep current image, or upload a new file/URL to replace it:'
+                    : 'Or provide an image URL (optional if uploading file):'}
                 </p>
                 <input
                   type="url"
                   value={formData.imageUrl}
                   onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
                   className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
-                  placeholder="https://example.com/image.jpg (optional)"
+                  placeholder={editingProject ? "Leave empty to keep current image or enter new URL" : "https://example.com/image.jpg (optional)"}
                 />
+                {editingProject && formData.imageUrl && !selectedFile && (
+                  <p className="text-xs text-blue-600 mt-1">
+                    ⓘ Current image will be replaced if you provide a new URL or upload a file
+                  </p>
+                )}
               </div>
               <div className="flex gap-4">
                 <button
@@ -395,9 +453,20 @@ export default function AdminProjectsPage() {
                 </div>
                 <div className="p-4">
                   <div className="flex justify-between items-start mb-2">
-                    <span className="text-xs font-semibold text-primary-600 uppercase">
-                      {project.category}
-                    </span>
+                    {project.category && (
+                      <span className="text-xs font-semibold text-primary-600 uppercase">
+                        {project.category}
+                      </span>
+                    )}
+                    {project.status && (
+                      <span className={`text-xs font-semibold px-2 py-1 rounded ${
+                        project.status === 'ongoing' 
+                          ? 'bg-green-100 text-green-700' 
+                          : 'bg-gray-100 text-gray-700'
+                      }`}>
+                        {project.status}
+                      </span>
+                    )}
                     {project.subsidiary && (
                       <span className="text-xs text-gray-500">{project.subsidiary}</span>
                     )}

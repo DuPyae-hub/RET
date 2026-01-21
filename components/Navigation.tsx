@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const subsidiaries = [
   { name: 'RET Advertising', path: '/ret-advertising' },
@@ -14,45 +14,65 @@ const subsidiaries = [
 export default function Navigation() {
   const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   return (
-    <nav className="bg-white shadow-lg sticky top-0 z-50 border-b-2 border-primary-500">
+    <nav className={`bg-white/95 backdrop-blur-md shadow-lg sticky top-0 z-50 border-b-2 border-primary-500 transition-all duration-300 ${
+      scrolled ? 'shadow-xl' : 'shadow-md'
+    }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-16 md:h-20">
           <div className="flex items-center">
-            <Link href="/" className="text-2xl font-bold text-primary-500 hover:text-primary-600 transition-colors">
+            <Link 
+              href="/" 
+              className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-text text-transparent hover:scale-105 transition-transform duration-300"
+            >
               RET Business Group
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-6">
+          <div className="hidden md:flex items-center space-x-2">
             <Link
               href="/"
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 relative ${
                 pathname === '/'
-                  ? 'text-primary-600 bg-primary-100 font-semibold'
+                  ? 'text-primary-600 bg-primary-50 font-semibold'
                   : 'text-gray-700 hover:text-primary-600 hover:bg-primary-50'
               }`}
             >
-              Group Overview
+              <span className="relative z-10">Group Overview</span>
+              {pathname === '/' && (
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary-500 to-accent-500 rounded-full"></span>
+              )}
             </Link>
             {subsidiaries.map((sub) => (
               <Link
                 key={sub.path}
                 href={sub.path}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 relative ${
                   pathname === sub.path
-                    ? 'text-primary-600 bg-primary-100 font-semibold'
+                    ? 'text-primary-600 bg-primary-50 font-semibold'
                     : 'text-gray-700 hover:text-primary-600 hover:bg-primary-50'
                 }`}
               >
-                {sub.name}
+                <span className="relative z-10">{sub.name}</span>
+                {pathname === sub.path && (
+                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary-500 to-accent-500 rounded-full"></span>
+                )}
               </Link>
             ))}
             <Link
               href="/admin"
-              className="px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-primary-50 transition-colors"
+              className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-primary-50 transition-all duration-300"
             >
               Admin
             </Link>
@@ -62,9 +82,10 @@ export default function Navigation() {
           <div className="md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-gray-700 hover:text-primary-700 focus:outline-none"
+              className="text-gray-700 hover:text-primary-700 focus:outline-none p-2 rounded-lg hover:bg-primary-50 transition-colors"
+              aria-label="Toggle menu"
             >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="h-6 w-6 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {isMenuOpen ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 ) : (
@@ -76,11 +97,17 @@ export default function Navigation() {
         </div>
 
         {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden pb-4">
+        <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+          isMenuOpen ? 'max-h-96 pb-4' : 'max-h-0'
+        }`}>
+          <div className="pt-2 space-y-1">
             <Link
               href="/"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-700 hover:bg-gray-50"
+              className={`block px-4 py-3 rounded-lg text-base font-medium transition-all duration-300 ${
+                pathname === '/'
+                  ? 'text-primary-600 bg-primary-50 font-semibold'
+                  : 'text-gray-700 hover:text-primary-700 hover:bg-gray-50'
+              }`}
               onClick={() => setIsMenuOpen(false)}
             >
               Group Overview
@@ -89,7 +116,11 @@ export default function Navigation() {
               <Link
                 key={sub.path}
                 href={sub.path}
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-700 hover:bg-gray-50"
+                className={`block px-4 py-3 rounded-lg text-base font-medium transition-all duration-300 ${
+                  pathname === sub.path
+                    ? 'text-primary-600 bg-primary-50 font-semibold'
+                    : 'text-gray-700 hover:text-primary-700 hover:bg-gray-50'
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 {sub.name}
@@ -97,13 +128,13 @@ export default function Navigation() {
             ))}
             <Link
               href="/admin"
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-primary-700 hover:bg-gray-50"
+              className="block px-4 py-3 rounded-lg text-base font-medium text-gray-700 hover:text-primary-700 hover:bg-gray-50 transition-all duration-300"
               onClick={() => setIsMenuOpen(false)}
             >
               Admin
             </Link>
           </div>
-        )}
+        </div>
       </div>
     </nav>
   )
