@@ -1,0 +1,53 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { query } from '@/lib/db'
+import { randomUUID } from 'crypto'
+
+export async function GET() {
+  try {
+    const settingsMap: Record<string, string> = {}
+
+    const rows = await query<{ key: string; value: string }[]>(
+      'SELECT `key`, `value` FROM site_settings'
+    )
+    ;(rows as any[]).forEach((setting) => {
+      settingsMap[setting.key] = setting.value
+    })
+
+    return NextResponse.json(settingsMap)
+  } catch (error) {
+    console.error('Error fetching settings:', error)
+    const message =
+      process.env.NODE_ENV !== 'production' && error instanceof Error ? error.message : 'Failed to fetch settings'
+    return NextResponse.json({ error: message }, { status: 500 })
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const { mission, vision, history, attitude, coreValues, officeAddress } = body
+
+    async function upsertSetting(key: string, value: string) {
+      await query(
+        `INSERT INTO site_settings (id, \`key\`, \`value\`, updatedAt)
+         VALUES (:id, :key, :value, NOW(3))
+         ON DUPLICATE KEY UPDATE \`value\` = VALUES(\`value\`), updatedAt = NOW(3)`,
+        { id: randomUUID(), key, value }
+      )
+    }
+
+    if (mission !== undefined) await upsertSetting('mission', mission)
+    if (vision !== undefined) await upsertSetting('vision', vision)
+    if (history !== undefined) await upsertSetting('history', history)
+    if (attitude !== undefined) await upsertSetting('attitude', attitude)
+    if (coreValues !== undefined) await upsertSetting('coreValues', coreValues)
+    if (officeAddress !== undefined) await upsertSetting('officeAddress', officeAddress)
+
+    return NextResponse.json({ message: 'Settings updated successfully' })
+  } catch (error) {
+    console.error('Error updating settings:', error)
+    const message =
+      process.env.NODE_ENV !== 'production' && error instanceof Error ? error.message : 'Failed to update settings'
+    return NextResponse.json({ error: message }, { status: 500 })
+  }
+}
