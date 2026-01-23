@@ -11,7 +11,7 @@ const nextConfig = {
         hostname: '**',
       },
     ],
-    domains: ['res.cloudinary.com', 'via.placeholder.com'],
+    domains: ['res.cloudinary.com', 'via.placeholder.com', 'images.unsplash.com'],
   },
   webpack: (config) => {
     config.resolve.alias = {

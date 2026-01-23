@@ -204,9 +204,33 @@ npm start
 
 Or deploy to platforms like Vercel, which has excellent Next.js support.
 
+## Foundation Features
+
+### Modern UI/UX Design
+- **Minimalistic Design**: Clean, professional interface with smooth animations
+- **Scroll Animations**: Content reveals on scroll for better user engagement
+- **Responsive Layout**: Fully responsive design for all device sizes
+- **Optimized Hover Effects**: Enhanced interactivity with smooth transitions
+- **Status Badges**: Visual status indicators (Ongoing/Finished/Unknown) on project cards
+
+### Unified Project System
+- **Status Tracking**: All projects across all subsidiaries support status (ongoing, finished, unknown)
+- **Category Management**: RET Advertising projects use categories; other subsidiaries use status
+- **Image Management**: Smart image handling - preserves existing images when editing
+- **Flexible Structure**: Easy to add new subsidiaries or modify existing ones
+
+### Design System
+- **Color Palette**: 
+  - Primary (Golden Yellow): #FFD700
+  - Secondary (Green): #32CD32
+  - Accent (Dark Blue): #00008B
+- **Typography**: Inter font family
+- **Components**: Reusable card components, animations, and layouts
+
 ## Notes
 
 - All images use placeholder URLs initially. Replace with actual project images and client logos.
-- Legal documents can be added through the admin panel (additional implementation needed).
-- The office address is set by default to: "No. 5, Tha Pyay Shwe Htee Road, 10th Quarter, South Okkalapa, Yangon"
+- Legal documents can be added through the admin panel.
+- The office address is set by default to: "No. 1168, Min Ye' Kyaw Swar Road, 6th Quarter, East Dagon Township, Yangon, Myanmar"
 - Consider adding authentication for admin routes in production.
+- This foundation is designed to be easily extensible for future features and subsidiaries.

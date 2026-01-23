@@ -66,6 +66,22 @@ export default function AdminPage() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-6 mt-6">
+          {/* Subsidiaries Management */}
+          <Link
+            href="/admin/subsidiaries"
+            className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow"
+          >
+            <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+              <svg className="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-semibold mb-2">Subsidiaries Management</h2>
+            <p className="text-gray-600 text-sm">
+              Manage subsidiaries, add images, descriptions, and control display order.
+            </p>
+          </Link>
+
           {/* Legal Documents */}
           <Link
             href="/admin/legal-documents"

@@ -24,6 +24,7 @@ export default function AdminSettingsPage() {
   })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [savingKey, setSavingKey] = useState<string | null>(null)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const [orgChartUrl, setOrgChartUrl] = useState<string | null>(null)
   const [uploadingChart, setUploadingChart] = useState(false)
@@ -145,6 +146,32 @@ export default function AdminSettingsPage() {
     }
   }
 
+  const handleSaveIndividual = async (key: keyof Settings) => {
+    setSavingKey(key)
+    setMessage(null)
+
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key, value: settings[key] }),
+      })
+
+      if (res.ok) {
+        setMessage({ type: 'success', text: `${key.charAt(0).toUpperCase() + key.slice(1)} updated successfully!` })
+        // Clear message after 3 seconds
+        setTimeout(() => setMessage(null), 3000)
+      } else {
+        const errorData = await res.json()
+        setMessage({ type: 'error', text: errorData.error || 'Failed to save setting' })
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Error saving setting' })
+    } finally {
+      setSavingKey(null)
+    }
+  }
+
   if (loading) {
     return (
       <div>
@@ -185,69 +212,129 @@ export default function AdminSettingsPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Mission</label>
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <label className="block text-sm font-medium text-gray-700">Mission</label>
+              <button
+                type="button"
+                onClick={() => handleSaveIndividual('mission')}
+                disabled={savingKey === 'mission'}
+                className="text-sm bg-primary-600 text-white px-4 py-1.5 rounded-md hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {savingKey === 'mission' ? 'Saving...' : 'Save'}
+              </button>
+            </div>
             <textarea
               value={settings.mission}
               onChange={(e) => setSettings({ ...settings, mission: e.target.value })}
-              className="w-full border border-gray-300 rounded-md px-3 py-2"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               rows={4}
               placeholder="Enter the company mission statement"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Vision</label>
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <label className="block text-sm font-medium text-gray-700">Vision</label>
+              <button
+                type="button"
+                onClick={() => handleSaveIndividual('vision')}
+                disabled={savingKey === 'vision'}
+                className="text-sm bg-primary-600 text-white px-4 py-1.5 rounded-md hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {savingKey === 'vision' ? 'Saving...' : 'Save'}
+              </button>
+            </div>
             <textarea
               value={settings.vision}
               onChange={(e) => setSettings({ ...settings, vision: e.target.value })}
-              className="w-full border border-gray-300 rounded-md px-3 py-2"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               rows={4}
               placeholder="Enter the company vision statement"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Attitude</label>
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <label className="block text-sm font-medium text-gray-700">Attitude</label>
+              <button
+                type="button"
+                onClick={() => handleSaveIndividual('attitude')}
+                disabled={savingKey === 'attitude'}
+                className="text-sm bg-primary-600 text-white px-4 py-1.5 rounded-md hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {savingKey === 'attitude' ? 'Saving...' : 'Save'}
+              </button>
+            </div>
             <textarea
               value={settings.attitude}
               onChange={(e) => setSettings({ ...settings, attitude: e.target.value })}
-              className="w-full border border-gray-300 rounded-md px-3 py-2"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               rows={3}
               placeholder="Enter the company attitude statement"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Core Values</label>
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <label className="block text-sm font-medium text-gray-700">Core Values</label>
+              <button
+                type="button"
+                onClick={() => handleSaveIndividual('coreValues')}
+                disabled={savingKey === 'coreValues'}
+                className="text-sm bg-primary-600 text-white px-4 py-1.5 rounded-md hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {savingKey === 'coreValues' ? 'Saving...' : 'Save'}
+              </button>
+            </div>
             <textarea
               value={settings.coreValues}
               onChange={(e) => setSettings({ ...settings, coreValues: e.target.value })}
-              className="w-full border border-gray-300 rounded-md px-3 py-2"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               rows={4}
               placeholder="Enter the company core values"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">History</label>
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <label className="block text-sm font-medium text-gray-700">History</label>
+              <button
+                type="button"
+                onClick={() => handleSaveIndividual('history')}
+                disabled={savingKey === 'history'}
+                className="text-sm bg-primary-600 text-white px-4 py-1.5 rounded-md hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {savingKey === 'history' ? 'Saving...' : 'Save'}
+              </button>
+            </div>
             <textarea
               value={settings.history}
               onChange={(e) => setSettings({ ...settings, history: e.target.value })}
-              className="w-full border border-gray-300 rounded-md px-3 py-2"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               rows={6}
               placeholder="Enter the company history"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Office Address</label>
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <label className="block text-sm font-medium text-gray-700">Office Address</label>
+              <button
+                type="button"
+                onClick={() => handleSaveIndividual('officeAddress')}
+                disabled={savingKey === 'officeAddress'}
+                className="text-sm bg-primary-600 text-white px-4 py-1.5 rounded-md hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {savingKey === 'officeAddress' ? 'Saving...' : 'Save'}
+              </button>
+            </div>
             <input
               type="text"
               value={settings.officeAddress}
               onChange={(e) => setSettings({ ...settings, officeAddress: e.target.value })}
-              className="w-full border border-gray-300 rounded-md px-3 py-2"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
               placeholder="Enter the head office address"
             />
             <p className="text-xs text-gray-500 mt-1">
@@ -255,13 +342,13 @@ export default function AdminSettingsPage() {
             </p>
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex gap-4 pt-4 border-t border-gray-200">
             <button
               type="submit"
               disabled={saving}
-              className="bg-primary-600 text-white px-6 py-2 rounded-lg hover:bg-primary-700 disabled:opacity-50"
+              className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 disabled:opacity-50"
             >
-              {saving ? 'Saving...' : 'Save Settings'}
+              {saving ? 'Saving All...' : 'Save All Settings'}
             </button>
           </div>
         </form>

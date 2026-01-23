@@ -6,33 +6,70 @@ import { FastForward, Users, Map, MapPin, Smartphone, Smile, Sparkles } from 'lu
 import ClientShowcase from '@/components/ClientShowcase'
 import ScrollAnimation from '@/components/ScrollAnimation'
 
+// Force dynamic rendering to ensure settings updates are reflected immediately
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
+// Disable all caching
+export const fetchCache = 'force-no-store'
+export const runtime = 'nodejs'
+
 async function getSiteSettings() {
+  // Default values - only used if database query fails or returns no data
+  const defaults = {
+    mission: 'Work Together to Build Our Business.',
+    vision: 'Be an Excellent Service Provider for Our Every Client.',
+    history: 'Established since 2007, providing professional overall Advertising & Media Services across the whole Myanmar territory.',
+    attitude: 'Learn to work hard on yourself; We have no competitor.',
+    coreValues: 'Focus on being a "corporate partner," ensuring "complete satisfaction," and commitment to "quality and efficiency of outcome".',
+  }
+
   try {
     const rows = await query<{ key: string; value: string }[]>(
       'SELECT `key`, `value` FROM site_settings WHERE `key` IN ("mission","vision","history","attitude","coreValues")'
     )
-    const map = new Map<string, string>((rows as any[]).map((r) => [r.key, r.value]))
+    
+    // Handle mysql2 RowDataPacket format - it returns an array
+    const rowsArray = Array.isArray(rows) ? rows : []
+    
+    // If no rows returned, use defaults
+    if (rowsArray.length === 0) {
+      console.log('No settings found in database, using defaults')
+      return defaults
+    }
+    
+    // Build settings object from database - ALWAYS use database values
+    const settings: Record<string, string> = {}
+    
+    // Process rows - mysql2 returns RowDataPacket objects
+    rowsArray.forEach((row: any) => {
+      // Access properties - mysql2 uses lowercase column names by default
+      const key = row.key || row.KEY || row['key'] || row['KEY']
+      const value = row.value || row.VALUE || row['value'] || row['VALUE']
+      
+      if (key) {
+        // Always use database value, even if empty string
+        settings[String(key)] = value !== null && value !== undefined ? String(value) : ''
+      }
+    })
+    
+    // Log for debugging
+    console.log('=== Settings from Database ===')
+    console.log('Rows found:', rowsArray.length)
+    console.log('Settings object:', settings)
+    
+    // Return database values, only fallback to defaults if key doesn't exist in database
     return {
-      mission: map.get('mission') || 'Work Together to Build Our Business.',
-      vision: map.get('vision') || 'Be an Excellent Service Provider for Our Every Client.',
-      history:
-        map.get('history') ||
-        'Established since 2007, providing professional overall Advertising & Media Services across the whole Myanmar territory.',
-      attitude: map.get('attitude') || 'Learn to work hard on yourself; We have no competitor.',
-      coreValues:
-        map.get('coreValues') ||
-        'Focus on being a "corporate partner," ensuring "complete satisfaction," and commitment to "quality and efficiency of outcome".',
+      mission: settings.mission !== undefined ? settings.mission : defaults.mission,
+      vision: settings.vision !== undefined ? settings.vision : defaults.vision,
+      history: settings.history !== undefined ? settings.history : defaults.history,
+      attitude: settings.attitude !== undefined ? settings.attitude : defaults.attitude,
+      coreValues: settings.coreValues !== undefined ? settings.coreValues : defaults.coreValues,
     }
   } catch (error) {
-    return {
-      mission: 'Work Together to Build Our Business.',
-      vision: 'Be an Excellent Service Provider for Our Every Client.',
-      history:
-        'Established since 2007, providing professional overall Advertising & Media Services across the whole Myanmar territory.',
-      attitude: 'Learn to work hard on yourself; We have no competitor.',
-      coreValues:
-        'Focus on being a "corporate partner," ensuring "complete satisfaction," and commitment to "quality and efficiency of outcome".',
-    }
+    console.error('Error fetching site settings:', error)
+    // Only use defaults if there's an error
+    return defaults
   }
 }
 
@@ -57,10 +94,147 @@ async function getOrganizationChartUrl() {
   }
 }
 
+async function getSubsidiaries() {
+  try {
+    // First, check if table exists and is empty, then auto-seed
+    try {
+      const countResult = await query<{ count: number }[]>(
+        'SELECT COUNT(*) as count FROM Subsidiary'
+      )
+      
+      const countArray = Array.isArray(countResult) ? countResult : []
+      const count = countArray[0]?.count || countArray[0]?.COUNT || 0
+
+      // If no subsidiaries exist, auto-seed them
+      if (count === 0) {
+        const defaultSubsidiaries = [
+          {
+            id: 'sub-001',
+            name: 'RET Advertising',
+            path: '/ret-advertising',
+            description: 'Branding, production, and CSR services',
+            imageUrl: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=600&fit=crop&q=80',
+            displayOrder: 1,
+          },
+          {
+            id: 'sub-002',
+            name: 'Million Zone',
+            path: '/million-zone',
+            description: 'Construction, infrastructure, and rural electrification',
+            imageUrl: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop&q=80',
+            displayOrder: 2,
+          },
+          {
+            id: 'sub-003',
+            name: 'Inner True',
+            path: '/inner-true',
+            description: 'Distribution and logistics (Telecom, Online Money, FMCG)',
+            imageUrl: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&h=600&fit=crop&q=80',
+            displayOrder: 3,
+          },
+          {
+            id: 'sub-004',
+            name: 'Agricultural Friends',
+            path: '/agricultural-friends',
+            description: 'General agricultural services',
+            imageUrl: 'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=800&h=600&fit=crop&q=80',
+            displayOrder: 4,
+          },
+        ]
+
+        for (const sub of defaultSubsidiaries) {
+          try {
+            await query(
+              `INSERT INTO Subsidiary (id, name, path, description, imageUrl, displayOrder, createdAt, updatedAt)
+               VALUES (:id, :name, :path, :description, :imageUrl, :displayOrder, NOW(3), NOW(3))`,
+              {
+                id: sub.id,
+                name: sub.name,
+                path: sub.path,
+                description: sub.description,
+                imageUrl: sub.imageUrl,
+                displayOrder: sub.displayOrder,
+              }
+            )
+          } catch (error: any) {
+            // Ignore duplicate key errors
+            if (error.code !== 'ER_DUP_ENTRY') {
+              console.error(`Error auto-seeding ${sub.name}:`, error)
+            }
+          }
+        }
+      }
+    } catch (error) {
+      // Table might not exist yet, that's okay
+      console.log('Auto-seed check skipped (table may not exist):', error)
+    }
+
+    // Now fetch all subsidiaries
+    const rows = await query<{
+      id: string
+      name: string
+      path: string
+      description: string | null
+      imageUrl: string | null
+      displayOrder: number
+    }[]>(
+      'SELECT id, name, path, description, imageUrl, displayOrder FROM Subsidiary ORDER BY displayOrder ASC, name ASC'
+    )
+
+    const rowsArray = Array.isArray(rows) ? rows : []
+    return rowsArray.map((row: any) => ({
+      id: row.id || row.ID,
+      name: row.name || row.NAME,
+      path: row.path || row.PATH,
+      description: row.description || row.DESCRIPTION || '',
+      imageUrl: row.imageUrl || row.imageURL || row.IMAGEURL || null,
+      displayOrder: row.displayOrder || row.DISPLAYORDER || 0,
+    }))
+  } catch (error) {
+    console.error('Error fetching subsidiaries:', error)
+    // Return default subsidiaries if database query fails
+    return [
+      {
+        id: 'default-1',
+        name: 'RET Advertising',
+        path: '/ret-advertising',
+        description: 'Branding, production, and CSR services',
+        imageUrl: null,
+        displayOrder: 1,
+      },
+      {
+        id: 'default-2',
+        name: 'Million Zone',
+        path: '/million-zone',
+        description: 'Construction, infrastructure, and rural electrification',
+        imageUrl: null,
+        displayOrder: 2,
+      },
+      {
+        id: 'default-3',
+        name: 'Inner True',
+        path: '/inner-true',
+        description: 'Distribution and logistics (Telecom, Online Money, FMCG)',
+        imageUrl: null,
+        displayOrder: 3,
+      },
+      {
+        id: 'default-4',
+        name: 'Agricultural Friends',
+        path: '/agricultural-friends',
+        description: 'General agricultural services',
+        imageUrl: null,
+        displayOrder: 4,
+      },
+    ]
+  }
+}
+
 export default async function HomePage() {
   const settings = await getSiteSettings()
   const documents = await getLegalDocuments()
   const orgChartUrl = await getOrganizationChartUrl()
+  const subsidiaries = await getSubsidiaries()
 
   const placeholderImage = 'https://via.placeholder.com/800x600?text=Document+Preview'
   const featuredLegalDocs = [
@@ -78,33 +252,6 @@ export default async function HomePage() {
       title: 'Business Operating License (Advertising)',
       description: 'Royal Ever Truth Business Group Co., Ltd – Advertising license (valid to 26/Sep/2025)',
       imageUrl: '/legal/operating-license.jpg',
-    },
-  ]
-
-  const subsidiaries = [
-    {
-      name: 'RET Advertising',
-      path: '/ret-advertising',
-      description: 'Branding, production, and CSR services',
-      color: 'bg-blue-50 hover:bg-blue-100',
-    },
-    {
-      name: 'Million Zone',
-      path: '/million-zone',
-      description: 'Construction, infrastructure, and rural electrification',
-      color: 'bg-green-50 hover:bg-green-100',
-    },
-    {
-      name: 'Inner True',
-      path: '/inner-true',
-      description: 'Distribution and logistics (Telecom, Online Money, FMCG)',
-      color: 'bg-purple-50 hover:bg-purple-100',
-    },
-    {
-      name: 'Agricultural Friends',
-      path: '/agricultural-friends',
-      description: 'General agricultural services',
-      color: 'bg-yellow-50 hover:bg-yellow-100',
     },
   ]
 
@@ -361,52 +508,43 @@ export default async function HomePage() {
       <ClientShowcase />
 
       {/* Subsidiaries */}
-      <section className="py-20 bg-gradient-to-b from-white via-gray-50 to-white relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollAnimation direction="up" delay={100}>
             <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold mb-4 text-gray-800">Our Subsidiaries</h2>
-              <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-                Explore our diverse portfolio of specialized business units delivering excellence across industries
+              <h2 className="text-3xl md:text-4xl font-bold mb-3 text-gray-900">Our Subsidiaries</h2>
+              <p className="text-gray-600 max-w-xl mx-auto">
+                Explore our diverse portfolio of specialized business units
               </p>
-              <div className="w-24 h-1 bg-gradient-to-r from-primary-500 to-secondary-500 mx-auto rounded-full mt-6"></div>
             </div>
           </ScrollAnimation>
           
-          <div className="relative flex flex-col md:flex-row justify-center items-center md:items-stretch">
+          <div className="grid md:grid-cols-2 gap-6">
             {subsidiaries.map((sub, index) => (
-              <ScrollAnimation key={sub.path} direction="up" delay={100 + index * 50}>
+              <ScrollAnimation key={sub.id || sub.path} direction="up" delay={100 + index * 50}>
                 <Link
                   href={sub.path}
-                  className={`relative bg-white rounded-2xl p-6 md:p-8 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-4 hover:z-50 group border border-gray-100 w-full md:w-[280px] ${
-                    index > 0 ? 'md:-ml-12' : ''
-                  } ${index === 0 ? 'md:ml-0' : ''}`}
-                  style={{
-                    zIndex: subsidiaries.length - index,
-                  }}
+                  className="block bg-white rounded-lg p-8 hover:shadow-md transition-shadow duration-300 border-l-4 border-transparent hover:border-primary-500 overflow-hidden"
                 >
-                  <div className="relative z-10">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-accent-500 rounded-2xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 shadow-lg">
-                        <Sparkles className="w-8 h-8 text-white" />
+                  <div className="flex gap-6">
+                    {sub.imageUrl && (
+                      <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden">
+                        <Image
+                          src={sub.imageUrl}
+                          alt={sub.name}
+                          fill
+                          className="object-cover"
+                          sizes="96px"
+                        />
                       </div>
-                      <div className="text-primary-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                      </div>
-                    </div>
-                    <h3 className="text-xl md:text-2xl font-bold mb-3 text-gray-800 group-hover:text-primary-600 transition-colors">
-                      {sub.name}
-                    </h3>
-                    <p className="text-gray-600 text-sm leading-relaxed mb-4">{sub.description}</p>
-                    <div className="flex items-center text-primary-600 text-sm font-semibold mt-4">
-                      <span className="group-hover:translate-x-2 transition-transform duration-300 inline-block">
-                        Explore
-                      </span>
-                      <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
+                    )}
+                    <div className="flex-1">
+                      <h3 className="text-xl font-bold mb-3 text-gray-900">
+                        {sub.name}
+                      </h3>
+                      <p className="text-gray-600 leading-relaxed">
+                        {sub.description}
+                      </p>
                     </div>
                   </div>
                 </Link>
@@ -418,44 +556,19 @@ export default async function HomePage() {
 
       {/* Organizational Structure */}
       <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollAnimation direction="up" delay={100}>
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-gray-800">Organizational Structure</h2>
-              <div className="bg-white p-8 rounded-lg shadow-md">
-                <div className="flex flex-col items-center">
-                  <div className="bg-gradient-to-r from-primary-500 to-accent-500 text-white px-8 py-4 rounded-lg mb-6 shadow-lg">
-                    <h3 className="text-xl font-bold">RET Business Group</h3>
-                  </div>
-                  <div className="grid md:grid-cols-4 gap-4 w-full">
-                    {subsidiaries.map((sub) => (
-                      <Link
-                        key={sub.path}
-                        href={sub.path}
-                        className="bg-gray-100 hover:bg-gray-200 px-4 py-3 rounded text-center transition-colors"
-                      >
-                        <span className="font-medium text-gray-800">{sub.name}</span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </ScrollAnimation>
-
-          {/* Organization Chart Image */}
-          <ScrollAnimation direction="up" delay={200}>
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="p-6 border-b border-gray-100">
-                <h3 className="text-xl font-semibold text-gray-800">Organization Chart</h3>
-                <p className="text-gray-600 text-sm mt-2">
-                  Visual overview of leadership, functional managers, and teams across RET Business Group.
+                <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-gray-800">Organizational Structure</h2>
+                <p className="text-gray-600 text-sm mt-2 text-center">
+                  Visual overview of leadership, functional managers, and teams.
                 </p>
               </div>
               <div className="relative w-full h-[420px] bg-gray-50">
                 <Image
                   src={orgChartUrl}
-                  alt="RET Business Group Organization Chart"
+                  alt="Organization Chart"
                   fill
                   className="object-contain p-6"
                   sizes="(max-width: 1024px) 100vw, 1024px"
