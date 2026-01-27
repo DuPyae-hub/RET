@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 
@@ -33,9 +34,17 @@ export default function Navigation() {
           <div className="flex items-center">
             <Link 
               href="/" 
-              className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-text text-transparent hover:scale-105 transition-transform duration-300"
+              className="flex items-center hover:scale-105 transition-transform duration-300"
+              aria-label="Royal Ever True (RET) Business Group"
             >
-              RET Business Group
+              <Image
+                src="/logo.png"
+                alt="Royal Ever True (RET) Business Group"
+                width={220}
+                height={70}
+                priority
+                className="h-10 md:h-12 w-auto"
+              />
             </Link>
           </div>
 
