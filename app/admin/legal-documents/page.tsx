@@ -90,7 +90,7 @@ export default function AdminLegalDocumentsPage() {
   }
 
   const handleUpload = async (): Promise<string | null> => {
-    if (!selectedFile) return formData.documentUrl || null
+    if (!selectedFile) return null
 
     setUploading(true)
     try {
@@ -125,15 +125,18 @@ export default function AdminLegalDocumentsPage() {
     e.preventDefault()
     setFormMessage(null)
 
-    let documentUrl = formData.documentUrl
+    let documentUrl: string | null = null
     if (selectedFile) {
       const uploadedUrl = await handleUpload()
       if (!uploadedUrl) return
       documentUrl = uploadedUrl
+    } else if (editingDocument) {
+      // If editing and no new file selected, use the existing document's documentUrl
+      documentUrl = editingDocument.documentUrl
     }
 
     if (!documentUrl) {
-      setFormMessage({ type: 'error', text: 'Please upload a document or provide a document URL' })
+      setFormMessage({ type: 'error', text: 'Please upload a document' })
       return
     }
 
@@ -177,7 +180,7 @@ export default function AdminLegalDocumentsPage() {
     setFormData({
       title: doc.title,
       description: doc.description || '',
-      documentUrl: doc.documentUrl,
+      documentUrl: '', // Don't pre-fill documentUrl since we only use file uploads
       type: doc.type,
     })
     setShowForm(true)
@@ -360,11 +363,11 @@ export default function AdminLegalDocumentsPage() {
                     />
                   </div>
                 )}
-                {formData.documentUrl && !selectedFile && (
+                {editingDocument && editingDocument.documentUrl && !selectedFile && (
                   <div className="mt-3">
                     <p className="text-xs text-gray-500 mb-1">Current document:</p>
                     <Link
-                      href={formData.documentUrl}
+                      href={editingDocument.documentUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-primary-600 hover:text-primary-700 text-sm"
@@ -373,16 +376,6 @@ export default function AdminLegalDocumentsPage() {
                     </Link>
                   </div>
                 )}
-                <p className="text-xs text-gray-500 mt-2">
-                  Or provide a document URL (optional if uploading file):
-                </p>
-                <input
-                  type="url"
-                  value={formData.documentUrl}
-                  onChange={(e) => setFormData({ ...formData, documentUrl: e.target.value })}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
-                  placeholder="https://example.com/document.pdf (optional)"
-                />
               </div>
               <div className="flex gap-4">
                 <button

@@ -79,7 +79,7 @@ export default function AdminClientsPage() {
   }
 
   const handleUpload = async (): Promise<string | null> => {
-    if (!selectedFile) return formData.logoUrl || null
+    if (!selectedFile) return null
 
     setUploading(true)
     try {
@@ -114,15 +114,18 @@ export default function AdminClientsPage() {
     e.preventDefault()
     setFormMessage(null)
 
-    let logoUrl = formData.logoUrl
+    let logoUrl: string | null = null
     if (selectedFile) {
       const uploadedUrl = await handleUpload()
       if (!uploadedUrl) return
       logoUrl = uploadedUrl
+    } else if (editingClient) {
+      // If editing and no new file selected, use the existing client's logoUrl
+      logoUrl = editingClient.logoUrl
     }
 
     if (!logoUrl) {
-      setFormMessage({ type: 'error', text: 'Please upload a logo or provide a logo URL' })
+      setFormMessage({ type: 'error', text: 'Please upload a logo' })
       return
     }
 
@@ -162,7 +165,7 @@ export default function AdminClientsPage() {
     setEditingClient(client)
     setFormData({
       name: client.name,
-      logoUrl: client.logoUrl,
+      logoUrl: '', // Don't pre-fill logoUrl since we only use file uploads
       category: client.category,
       subsidiary: client.subsidiary || 'RET Advertising',
     })
@@ -324,11 +327,11 @@ export default function AdminClientsPage() {
                     />
                   </div>
                 )}
-                {formData.logoUrl && !selectedFile && (
+                {editingClient && editingClient.logoUrl && !selectedFile && (
                   <div className="mt-3">
                     <p className="text-xs text-gray-500 mb-1">Current logo:</p>
                     <Image
-                      src={formData.logoUrl}
+                      src={editingClient.logoUrl}
                       alt="Current"
                       width={150}
                       height={100}
@@ -336,16 +339,6 @@ export default function AdminClientsPage() {
                     />
                   </div>
                 )}
-                <p className="text-xs text-gray-500 mt-2">
-                  Or provide a logo URL (optional if uploading file):
-                </p>
-                <input
-                  type="url"
-                  value={formData.logoUrl}
-                  onChange={(e) => setFormData({ ...formData, logoUrl: e.target.value })}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
-                  placeholder="https://example.com/logo.png (optional)"
-                />
               </div>
               <div className="flex gap-4">
                 <button

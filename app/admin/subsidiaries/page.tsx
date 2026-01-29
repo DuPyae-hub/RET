@@ -106,13 +106,13 @@ export default function AdminSubsidiariesPage() {
     e.preventDefault()
     setFormMessage(null)
 
-    let imageUrl = formData.imageUrl
+    let imageUrl: string | null = null
     if (selectedFile) {
       const uploadedUrl = await handleUpload()
       if (!uploadedUrl) return
       imageUrl = uploadedUrl
-    } else if (editingSubsidiary && !formData.imageUrl) {
-      // If no new file selected and imageUrl is cleared, keep the original image
+    } else if (editingSubsidiary) {
+      // If editing and no new file selected, use the existing subsidiary's imageUrl
       imageUrl = editingSubsidiary.imageUrl || null
     }
 
@@ -167,10 +167,10 @@ export default function AdminSubsidiariesPage() {
       name: subsidiary.name,
       path: subsidiary.path,
       description: subsidiary.description || '',
-      imageUrl: subsidiary.imageUrl || '',
+      imageUrl: '', // Don't pre-fill imageUrl since we only use file uploads
       displayOrder: subsidiary.displayOrder,
     })
-    setPreviewUrl(subsidiary.imageUrl || null)
+    setPreviewUrl(null) // Clear preview when editing
     setShowForm(true)
   }
 
@@ -293,21 +293,12 @@ export default function AdminSubsidiariesPage() {
                     min="0"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-                  <input
-                    type="text"
-                    value={formData.imageUrl}
-                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2"
-                    placeholder="https://example.com/image.jpg"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">Or upload an image below</p>
-                </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Upload Image</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Image {selectedFile ? '(File Selected)' : editingSubsidiary ? '(Optional - Upload New Image)' : '(Upload from Device)'}
+                </label>
                 <input
                   type="file"
                   accept="image/*"

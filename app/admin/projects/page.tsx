@@ -98,7 +98,7 @@ export default function AdminProjectsPage() {
   }
 
   const handleUpload = async (): Promise<string | null> => {
-    if (!selectedFile) return formData.imageUrl || null
+    if (!selectedFile) return null
 
     setUploading(true)
     try {
@@ -134,19 +134,19 @@ export default function AdminProjectsPage() {
     setFormMessage(null)
 
     // Upload image only if a new file is selected
-    let imageUrl = formData.imageUrl
+    let imageUrl: string | null = null
     if (selectedFile) {
       const uploadedUrl = await handleUpload()
       if (!uploadedUrl) return // Error already shown
       imageUrl = uploadedUrl
-    } else if (editingProject && !imageUrl) {
+    } else if (editingProject) {
       // If editing and no new file selected, use the existing project's imageUrl
       imageUrl = editingProject.imageUrl
     }
 
-    // Only require image for new projects, not when editing (if editing, keep existing image)
+    // Require image for new projects
     if (!imageUrl && !editingProject) {
-      setFormMessage({ type: 'error', text: 'Please upload an image or provide an image URL' })
+      setFormMessage({ type: 'error', text: 'Please upload an image' })
       return
     }
 
@@ -202,7 +202,7 @@ export default function AdminProjectsPage() {
       title: project.title,
       description: project.description || '',
       category: project.category,
-      imageUrl: project.imageUrl,
+      imageUrl: '', // Don't pre-fill imageUrl since we only use file uploads
       subsidiary: project.subsidiary || 'RET Advertising',
       status: project.status || 'ongoing',
     })
@@ -381,34 +381,17 @@ export default function AdminProjectsPage() {
                     />
                   </div>
                 )}
-                {formData.imageUrl && !selectedFile && (
+                {editingProject && editingProject.imageUrl && !selectedFile && (
                   <div className="mt-3">
                     <p className="text-xs text-gray-500 mb-1">Current image:</p>
                     <Image
-                      src={formData.imageUrl}
+                      src={editingProject.imageUrl}
                       alt="Current"
                       width={200}
                       height={150}
                       className="rounded border border-gray-300 object-cover"
                     />
                   </div>
-                )}
-                <p className="text-xs text-gray-500 mt-2">
-                  {editingProject 
-                    ? 'Leave empty to keep current image, or upload a new file/URL to replace it:'
-                    : 'Or provide an image URL (optional if uploading file):'}
-                </p>
-                <input
-                  type="url"
-                  value={formData.imageUrl}
-                  onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 mt-1"
-                  placeholder={editingProject ? "Leave empty to keep current image or enter new URL" : "https://example.com/image.jpg (optional)"}
-                />
-                {editingProject && formData.imageUrl && !selectedFile && (
-                  <p className="text-xs text-blue-600 mt-1">
-                    ⓘ Current image will be replaced if you provide a new URL or upload a file
-                  </p>
                 )}
               </div>
               <div className="flex gap-4">
