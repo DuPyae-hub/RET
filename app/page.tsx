@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import ClientShowcase from "@/components/ClientShowcase";
 import ScrollAnimation from "@/components/ScrollAnimation";
+import LiveSearchClient from '@/components/LiveSearchClient'
 
 // Force dynamic rendering to ensure settings updates are reflected immediately
 export const dynamic = "force-dynamic";
@@ -70,17 +71,17 @@ async function getSiteSettings() {
     console.log("Settings object:", settings);
 
     // Return database values, fallback to defaults if key is missing or the value is empty
-    const useOrDefault = (value: any, fallback: string) => {
+    const orDefault = (value: any, fallback: string) => {
       const v = value === undefined || value === null ? "" : String(value);
       return v.trim() !== "" ? v : fallback;
     };
 
     return {
-      mission: useOrDefault(settings.mission, defaults.mission),
-      vision: useOrDefault(settings.vision, defaults.vision),
-      history: useOrDefault(settings.history, defaults.history),
-      attitude: useOrDefault(settings.attitude, defaults.attitude),
-      coreValues: useOrDefault(settings.coreValues, defaults.coreValues),
+      mission: orDefault(settings.mission, defaults.mission),
+      vision: orDefault(settings.vision, defaults.vision),
+      history: orDefault(settings.history, defaults.history),
+      attitude: orDefault(settings.attitude, defaults.attitude),
+      coreValues: orDefault(settings.coreValues, defaults.coreValues),
     };
   } catch (error) {
     console.error("Error fetching site settings:", error);
@@ -443,6 +444,9 @@ export default async function HomePage() {
               & Media Services across the whole Myanmar territory.
             </p>
           </ScrollAnimation>
+          <div className="mt-8">
+            <LiveSearchClient />
+          </div>
         </div>
       </section>
 

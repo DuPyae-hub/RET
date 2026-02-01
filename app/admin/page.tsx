@@ -1,7 +1,38 @@
+"use client"
+
 import Breadcrumbs from '@/components/Breadcrumbs'
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
 export default function AdminPage() {
+  const [projectCount, setProjectCount] = useState<number | null>(null)
+  const [clientCount, setClientCount] = useState<number | null>(null)
+
+  useEffect(() => {
+    async function loadCounts() {
+      try {
+        const [projectsRes, clientsRes] = await Promise.all([
+          fetch('/api/projects'),
+          fetch('/api/clients'),
+        ])
+
+        if (projectsRes.ok) {
+          const projects = await projectsRes.json()
+          setProjectCount(Array.isArray(projects) ? projects.length : 0)
+        } else setProjectCount(0)
+
+        if (clientsRes.ok) {
+          const clients = await clientsRes.json()
+          setClientCount(Array.isArray(clients) ? clients.length : 0)
+        } else setClientCount(0)
+      } catch (err) {
+        setProjectCount(0)
+        setClientCount(0)
+      }
+    }
+    loadCounts()
+  }, [])
+
   return (
     <div>
       <Breadcrumbs
@@ -12,8 +43,61 @@ export default function AdminPage() {
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        <h1 className="text-3xl md:text-4xl font-semibold text-[#0F2942] mb-8">Admin Dashboard</h1>
+        <h1 className="text-3xl md:text-4xl font-semibold text-[#0F2942] mb-6">Admin Dashboard</h1>
 
+        <div className="grid md:grid-cols-4 gap-6 mb-6">
+          <Link href="/admin/projects" className="card-ret p-6 hover-lift group flex flex-col">
+            <div className="flex items-center justify-between mb-2">
+              <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#1A4A94]/10">
+                <svg className="w-6 h-6 text-[#1A4A94]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16" />
+                </svg>
+              </div>
+              <div className="text-sm text-slate-500">Projects</div>
+            </div>
+            <div className="mt-auto">
+              <div className="text-2xl font-bold text-[#0F2942]">{projectCount ?? '—'}</div>
+              <div className="text-sm text-gray-500">Total projects across subsidiaries</div>
+            </div>
+          </Link>
+
+          <Link href="/admin/clients" className="card-ret p-6 hover-lift group flex flex-col">
+            <div className="flex items-center justify-between mb-2">
+              <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#1A4A94]/10">
+                <svg className="w-6 h-6 text-[#1A4A94]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857" />
+                </svg>
+              </div>
+              <div className="text-sm text-slate-500">Clients</div>
+            </div>
+            <div className="mt-auto">
+              <div className="text-2xl font-bold text-[#0F2942]">{clientCount ?? '—'}</div>
+              <div className="text-sm text-gray-500">Total registered clients</div>
+            </div>
+          </Link>
+
+          <Link href="/admin/settings" className="card-ret p-6 hover-lift group">
+            <div className="w-12 h-12 rounded-full flex items-center justify-center mb-2 bg-[#1A4A94]/10">
+              <svg className="w-6 h-6 text-[#1A4A94]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold mb-1 text-[#0F2942]">Site Settings</h3>
+            <p className="text-gray-600 text-sm">Mission, Vision, Office Address, organization chart.</p>
+          </Link>
+
+          <Link href="/admin/subsidiaries" className="card-ret p-6 hover-lift group">
+            <div className="w-12 h-12 rounded-full flex items-center justify-center mb-2 bg-[#1A4A94]/10">
+              <svg className="w-6 h-6 text-[#1A4A94]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold mb-1 text-[#0F2942]">Subsidiaries</h3>
+            <p className="text-gray-600 text-sm">Manage subsidiaries, images, descriptions, display order.</p>
+          </Link>
+        </div>
+
+        {/* existing grid of admin sections */}
         <div className="grid md:grid-cols-3 gap-6">
           <Link href="/admin/projects" className="card-ret p-6 hover-lift group">
             <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4 bg-[#1A4A94]/10 group-hover:bg-[#1A4A94]/15 transition-colors">
@@ -44,28 +128,6 @@ export default function AdminPage() {
             </div>
             <h2 className="text-lg font-semibold mb-2 text-[#0F2942]">Site Settings</h2>
             <p className="text-gray-600 text-sm">Mission, Vision, Office Address, organization chart.</p>
-          </Link>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-6 mt-6">
-          <Link href="/admin/subsidiaries" className="card-ret p-6 hover-lift group">
-            <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4 bg-[#1A4A94]/10 group-hover:bg-[#1A4A94]/15 transition-colors">
-              <svg className="w-7 h-7 text-[#1A4A94]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
-            </div>
-            <h2 className="text-lg font-semibold mb-2 text-[#0F2942]">Subsidiaries Management</h2>
-            <p className="text-gray-600 text-sm">Manage subsidiaries, images, descriptions, display order.</p>
-          </Link>
-
-          <Link href="/admin/legal-documents" className="card-ret p-6 hover-lift group">
-            <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4 bg-[#1A4A94]/10 group-hover:bg-[#1A4A94]/15 transition-colors">
-              <svg className="w-7 h-7 text-[#1A4A94]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <h2 className="text-lg font-semibold mb-2 text-[#0F2942]">Legal Documents</h2>
-            <p className="text-gray-600 text-sm">Certificates, licenses, and registrations.</p>
           </Link>
         </div>
       </div>
