@@ -45,7 +45,8 @@ async function autoSeedSubsidiaries() {
     )
     
     const countArray = Array.isArray(countResult) ? countResult : []
-    const count = countArray[0]?.count || countArray[0]?.COUNT || 0
+    const firstRow = countArray[0] as { count?: number; COUNT?: number } | undefined
+    const count = firstRow?.count ?? firstRow?.COUNT ?? 0
 
     // If no subsidiaries exist, seed them
     if (count === 0) {

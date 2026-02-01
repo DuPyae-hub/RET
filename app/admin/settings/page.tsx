@@ -338,7 +338,7 @@ export default function AdminSettingsPage() {
               placeholder="Enter the head office address"
             />
             <p className="text-xs text-gray-500 mt-1">
-              Default: No. 1168, Min Ye' Kyaw Swar Road, 6th Quarter, East Dagon Township, Yangon, Myanmar
+              Default: No. 1168, Min Ye&apos; Kyaw Swar Road, 6th Quarter, East Dagon Township, Yangon, Myanmar
             </p>
           </div>
 

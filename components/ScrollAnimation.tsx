@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 interface ScrollAnimationProps {
   children: React.ReactNode
@@ -18,30 +18,30 @@ export default function ScrollAnimation({
   const [isVisible, setIsVisible] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
+  // useLayoutEffect runs before paint - makes above-fold content visible immediately
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (!el || typeof window === 'undefined') return
+    const rect = el.getBoundingClientRect()
+    if (rect.top < window.innerHeight + 100 && rect.bottom > -100) {
+      setIsVisible(true)
+    }
+  }, [])
+
   useEffect(() => {
+    const el = ref.current
+    if (!el) return
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setTimeout(() => {
-            setIsVisible(true)
-          }, delay)
+          setTimeout(() => setIsVisible(true), delay)
         }
       },
-      {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px',
-      }
+      { threshold: 0.05, rootMargin: '0px 0px -30px 0px' }
     )
-
-    if (ref.current) {
-      observer.observe(ref.current)
-    }
-
-    return () => {
-      if (ref.current) {
-        observer.unobserve(ref.current)
-      }
-    }
+    observer.observe(el)
+    return () => observer.unobserve(el)
   }, [delay])
 
   const directionClasses = {

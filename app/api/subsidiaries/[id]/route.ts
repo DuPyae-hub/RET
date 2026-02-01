@@ -23,14 +23,14 @@ export async function GET(
       return NextResponse.json({ error: 'Subsidiary not found' }, { status: 404 })
     }
 
-    const row = rowsArray[0]
+    const row = rowsArray[0] as Record<string, unknown>
     const subsidiary = {
-      id: row.id || row.ID,
-      name: row.name || row.NAME,
-      path: row.path || row.PATH,
+      id: row.id || row.ID || '',
+      name: row.name || row.NAME || '',
+      path: row.path || row.PATH || '',
       description: row.description || row.DESCRIPTION || '',
       imageUrl: row.imageUrl || row.imageURL || row.IMAGEURL || null,
-      displayOrder: row.displayOrder || row.DISPLAYORDER || 0,
+      displayOrder: Number(row.displayOrder ?? row.DISPLAYORDER ?? 0),
     }
 
     return NextResponse.json(subsidiary)

@@ -40,11 +40,13 @@ async function upsertSetting(key: string, value: string) {
       { key }
     )
     
-    let existingId = randomUUID()
+    let existingId: string = randomUUID()
     if (Array.isArray(existing) && existing.length > 0) {
-      existingId = existing[0].id || existing[0].ID || randomUUID()
+      const row = existing[0] as { id?: string; ID?: string }
+      existingId = row.id || row.ID || randomUUID()
     } else if (existing && typeof existing === 'object' && 'id' in existing) {
-      existingId = (existing as any).id || (existing as any).ID || randomUUID()
+      const row = existing as { id?: string; ID?: string }
+      existingId = row.id || row.ID || randomUUID()
     }
     
     await query(

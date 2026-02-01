@@ -9,48 +9,51 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: {
-          // Golden Yellow - Royal, Clarity, Intellect
-          50: '#fffef0',
-          100: '#fffce0',
-          200: '#fff9c2',
-          300: '#fff5a3',
-          400: '#fff285',
-          500: '#FFD700', // Primary Golden Yellow
-          600: '#e6c200',
-          700: '#ccad00',
-          800: '#b39900',
-          900: '#998500',
+        // RET Brand Colors
+        ret: {
+          blue: '#1A4A94',      // Royal Blue - Primary (Navbar, Footer, Buttons)
+          'blue-dark': '#143870',
+          'blue-light': '#2563CC',
+          gold: '#FFC107',      // Logo Gold - Accent (hover, active nav, icons)
+          'gold-dark': '#E6AC00',
+          'gold-light': '#FFD54F',
+          offWhite: '#F8F9FA',  // Main body background
+          white: '#FFFFFF',     // Cards
+          border: '#E9ECEF',    // Card borders
+          'heading': '#0F2942', // Dark blue for headings
         },
-        secondary: {
-          // Solid Green - Harmony, Ever Grow, Commitment
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: '#32CD32', // Primary Green
-          600: '#22c55e',
-          700: '#16a34a',
-          800: '#15803d',
-          900: '#166534',
+        // Keep legacy aliases for gradual migration
+        primary: {
+          50: '#E8EEF7',
+          100: '#D1DEEF',
+          200: '#A3BDE0',
+          300: '#759CD0',
+          400: '#477BC1',
+          500: '#1A4A94', // Royal Blue
+          600: '#143870',
+          700: '#0F2942',
+          800: '#0A1C2B',
+          900: '#050E15',
         },
         accent: {
-          // Dark Blue - Wisdom, Confidence, Truth
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#00008B', // Primary Dark Blue
-          600: '#00007a',
-          700: '#000069',
-          800: '#000058',
-          900: '#000047',
+          50: '#FFFDE7',
+          100: '#FFF9C4',
+          200: '#FFF59D',
+          300: '#FFF176',
+          400: '#FFEE58',
+          500: '#FFC107', // Logo Gold
+          600: '#E6AC00',
+          700: '#CC9600',
+          800: '#B38000',
+          900: '#996B00',
         },
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
+      },
+      boxShadow: {
+        'ret-card': '0 2px 8px rgba(26, 74, 148, 0.06)',
+        'ret-card-hover': '0 8px 24px rgba(26, 74, 148, 0.12)',
       },
     },
   },

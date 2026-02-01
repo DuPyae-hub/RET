@@ -402,7 +402,7 @@ export default function AdminSubsidiariesPage() {
               ) : (
                 <tr>
                   <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
-                    No subsidiaries found. Click "Add New Subsidiary" to create one.
+                    No subsidiaries found. Click &quot;Add New Subsidiary&quot; to create one.
                   </td>
                 </tr>
               )}

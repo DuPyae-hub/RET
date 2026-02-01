@@ -103,7 +103,8 @@ async function getSubsidiaries() {
       )
       
       const countArray = Array.isArray(countResult) ? countResult : []
-      const count = countArray[0]?.count || countArray[0]?.COUNT || 0
+      const firstRow = countArray[0] as { count?: number; COUNT?: number } | undefined
+      const count = firstRow?.count ?? firstRow?.COUNT ?? 0
 
       // If no subsidiaries exist, auto-seed them
       if (count === 0) {
@@ -259,35 +260,20 @@ export default async function HomePage() {
     <div>
       <Breadcrumbs items={[{ label: 'Home', href: '/' }]} />
 
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-primary-500 via-primary-600 to-accent-500 text-white py-24 md:py-32 relative overflow-hidden">
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-10 left-10 w-20 h-20 border-4 border-white rounded-full animate-float"></div>
-          <div className="absolute top-32 right-20 w-16 h-16 border-4 border-white rotate-45 animate-float" style={{ animationDelay: '1s' }}></div>
-          <div className="absolute bottom-20 left-1/4 w-12 h-12 border-4 border-white rounded-full animate-float" style={{ animationDelay: '2s' }}></div>
-          <div className="absolute top-1/2 right-1/4 w-24 h-24 border-4 border-white/50 rounded-full animate-pulse"></div>
-        </div>
-        
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/10"></div>
-        
+      {/* Hero Section - Royal Blue with subtle geometric pattern */}
+      <section className="bg-[#1A4A94] text-white py-24 md:py-32 relative overflow-hidden">
+        <div className="absolute inset-0 hero-pattern opacity-100" aria-hidden />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <ScrollAnimation direction="fade" delay={100}>
-            <div className="flex items-center gap-2 mb-4 animate-fade-in">
-              <Sparkles className="w-6 h-6 text-primary-200 animate-pulse" />
-              <span className="text-primary-200 text-sm font-semibold uppercase tracking-wider">Since 2007</span>
-            </div>
+            <span className="inline-block text-white/80 text-sm font-semibold uppercase tracking-wider mb-4">Since 2007</span>
           </ScrollAnimation>
-          
           <ScrollAnimation direction="up" delay={200}>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-              Royal Ever True
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight text-white">
+              Royal Ever Truth
               <br />
-              <span className="text-primary-200">Business Group</span>
+              Business Group
             </h1>
           </ScrollAnimation>
-          
           <ScrollAnimation direction="up" delay={300}>
             <p className="text-xl md:text-2xl text-white/90 max-w-3xl leading-relaxed">
               Established since 2007, providing professional overall Advertising & Media Services across the whole Myanmar territory.
@@ -297,30 +283,29 @@ export default async function HomePage() {
       </section>
 
       {/* Mission & Vision */}
-      <section className="py-20 bg-gradient-to-b from-white to-gray-50">
+      <section className="py-16 md:py-20 bg-[#F8F9FA]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-6 md:gap-8">
             <ScrollAnimation direction="right" delay={100}>
-              <div className="card-modern bg-gradient-to-br from-primary-50 to-primary-100 p-8 md:p-10 border-l-4 border-primary-500 hover-lift">
+              <div className="card-ret bg-white p-6 md:p-8 border-l-4 border-[#1A4A94] hover-lift">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-primary-500 rounded-full flex items-center justify-center">
-                    <Sparkles className="w-6 h-6 text-white" />
+                  <div className="w-12 h-12 bg-[#1A4A94] rounded-full flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 text-[#FFC107]" />
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-bold text-primary-800">Our Mission</h2>
+                  <h2 className="text-xl md:text-2xl font-semibold text-[#0F2942]">Our Mission</h2>
                 </div>
-                <p className="text-gray-700 text-lg leading-relaxed">{settings.mission}</p>
+                <p className="text-gray-600 text-base leading-relaxed">{settings.mission}</p>
               </div>
             </ScrollAnimation>
-            
             <ScrollAnimation direction="left" delay={200}>
-              <div className="card-modern bg-gradient-to-br from-secondary-50 to-secondary-100 p-8 md:p-10 border-l-4 border-secondary-500 hover-lift">
+              <div className="card-ret bg-white p-6 md:p-8 border-l-4 border-[#1A4A94] hover-lift">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-secondary-500 rounded-full flex items-center justify-center">
-                    <Sparkles className="w-6 h-6 text-white" />
+                  <div className="w-12 h-12 bg-[#1A4A94] rounded-full flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 text-[#FFC107]" />
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-bold text-secondary-800">Our Vision</h2>
+                  <h2 className="text-xl md:text-2xl font-semibold text-[#0F2942]">Our Vision</h2>
                 </div>
-                <p className="text-gray-700 text-lg leading-relaxed">{settings.vision}</p>
+                <p className="text-gray-600 text-base leading-relaxed">{settings.vision}</p>
               </div>
             </ScrollAnimation>
           </div>
@@ -328,38 +313,30 @@ export default async function HomePage() {
       </section>
 
       {/* Attitude & Core Values */}
-      <section className="py-20 bg-gradient-to-br from-accent-500 via-accent-600 to-accent-700 relative overflow-hidden">
-        {/* Animated Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-full h-full" style={{
-            backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(255,255,255,0.3) 1px, transparent 0)',
-            backgroundSize: '40px 40px'
-          }}></div>
-        </div>
-        
+      <section className="py-16 md:py-20 bg-[#1A4A94] relative overflow-hidden">
+        <div className="absolute inset-0 hero-pattern opacity-100" aria-hidden />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-6 md:gap-8">
             <ScrollAnimation direction="right" delay={100}>
-              <div className="glass p-8 md:p-10 rounded-2xl border border-white/30 hover-lift">
+              <div className="card-ret bg-white/5 backdrop-blur-sm border border-white/20 p-6 md:p-8 hover-lift">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                    <Sparkles className="w-6 h-6 text-white" />
+                  <div className="w-12 h-12 bg-[#FFC107]/20 rounded-full flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 text-[#FFC107]" />
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-bold text-white">Our Attitude</h2>
+                  <h2 className="text-xl md:text-2xl font-semibold text-white">Our Attitude</h2>
                 </div>
-                <p className="text-lg leading-relaxed text-white/95">{settings.attitude}</p>
+                <p className="text-white/90 leading-relaxed">{settings.attitude}</p>
               </div>
             </ScrollAnimation>
-            
             <ScrollAnimation direction="left" delay={200}>
-              <div className="glass p-8 md:p-10 rounded-2xl border border-white/30 hover-lift">
+              <div className="card-ret bg-white/5 backdrop-blur-sm border border-white/20 p-6 md:p-8 hover-lift">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                    <Sparkles className="w-6 h-6 text-white" />
+                  <div className="w-12 h-12 bg-[#FFC107]/20 rounded-full flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 text-[#FFC107]" />
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-bold text-white">Core Values</h2>
+                  <h2 className="text-xl md:text-2xl font-semibold text-white">Core Values</h2>
                 </div>
-                <p className="text-lg leading-relaxed text-white/95">{settings.coreValues}</p>
+                <p className="text-white/90 leading-relaxed">{settings.coreValues}</p>
               </div>
             </ScrollAnimation>
           </div>
@@ -367,139 +344,56 @@ export default async function HomePage() {
       </section>
 
       {/* History */}
-      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+      <section className="py-16 md:py-20 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollAnimation direction="up" delay={100}>
-            <div className="text-center mb-12">
-              <h2 className="text-4xl md:text-5xl font-bold mb-4 gradient-text">Our History</h2>
-              <div className="w-24 h-1 bg-gradient-to-r from-primary-500 to-secondary-500 mx-auto rounded-full"></div>
+            <div className="text-center mb-8 md:mb-12">
+              <h2 className="text-3xl md:text-4xl font-semibold text-[#0F2942] mb-3">Our History</h2>
+              <div className="w-16 h-1 bg-[#FFC107] mx-auto rounded-full" />
             </div>
           </ScrollAnimation>
-          
           <ScrollAnimation direction="up" delay={200}>
-            <div className="card-modern p-8 md:p-10 bg-white">
-              <p className="text-lg md:text-xl text-gray-700 leading-relaxed text-center">{settings.history}</p>
+            <div className="card-ret p-6 md:p-8">
+              <p className="text-base md:text-lg text-gray-600 leading-relaxed text-center">{settings.history}</p>
             </div>
           </ScrollAnimation>
         </div>
       </section>
 
       {/* Our Strong Points */}
-      <section className="py-20 bg-white relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <section className="py-16 md:py-20 bg-[#F8F9FA]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollAnimation direction="up" delay={100}>
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-3 text-gray-800">
-                Our Strong Points
-              </h2>
-              <p className="text-gray-600 max-w-2xl mx-auto">
+            <div className="text-center mb-10 md:mb-12">
+              <h2 className="text-3xl md:text-4xl font-semibold text-[#0F2942] mb-3">Our Strong Points</h2>
+              <p className="text-gray-600 max-w-2xl mx-auto text-base">
                 Key strengths that drive our success and commitment to excellence
               </p>
             </div>
           </ScrollAnimation>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {/* Card 1: Smooth Progress */}
-            <ScrollAnimation direction="up" delay={100}>
-              <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 group">
-                <div className="flex items-start gap-4">
-                  <div className="bg-accent-500/10 rounded-lg p-3 group-hover:bg-accent-500/20 transition-colors">
-                    <FastForward className="w-6 h-6 text-accent-600" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold mb-2 text-gray-800">Smooth Progress</h3>
-                    <p className="text-sm text-gray-600 leading-relaxed">
-                      Efficient workflow and seamless project execution
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </ScrollAnimation>
-
-            {/* Card 2: Organized Team Structure */}
-            <ScrollAnimation direction="up" delay={150}>
-              <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 group">
-                <div className="flex items-start gap-4">
-                  <div className="bg-accent-500/10 rounded-lg p-3 group-hover:bg-accent-500/20 transition-colors">
-                    <Users className="w-6 h-6 text-accent-600" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold mb-2 text-gray-800">Organized Team Structure</h3>
-                    <p className="text-sm text-gray-600 leading-relaxed">
-                      Well-structured teams with clear hierarchy and roles
-                    </p>
+            {[
+              { icon: FastForward, title: 'Smooth Progress', desc: 'Efficient workflow and seamless project execution' },
+              { icon: Users, title: 'Organized Team Structure', desc: 'Well-structured teams with clear hierarchy and roles' },
+              { icon: Map, title: 'Nationwide Coverage', desc: 'Extensive reach across the whole Myanmar territory' },
+              { icon: MapPin, title: 'Branch Offices', desc: 'Strategic locations for better service delivery' },
+              { icon: Smartphone, title: 'Frequently Update Reports', desc: 'Real-time updates and transparent communication' },
+              { icon: Smile, title: 'Customer Satisfaction', desc: 'Commitment to complete satisfaction and quality service' },
+            ].map((item, idx) => (
+              <ScrollAnimation key={item.title} direction="up" delay={100 + idx * 50}>
+                <div className="card-ret p-6 group">
+                  <div className="flex items-start gap-4">
+                    <div className="bg-[#1A4A94]/10 rounded-lg p-3 group-hover:bg-[#1A4A94]/15 transition-colors">
+                      <item.icon className="w-6 h-6 text-[#1A4A94]" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-base font-semibold mb-2 text-[#0F2942]">{item.title}</h3>
+                      <p className="text-sm text-gray-600 leading-relaxed">{item.desc}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </ScrollAnimation>
-
-            {/* Card 3: Nationwide Coverage */}
-            <ScrollAnimation direction="up" delay={200}>
-              <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 group">
-                <div className="flex items-start gap-4">
-                  <div className="bg-secondary-500/10 rounded-lg p-3 group-hover:bg-secondary-500/20 transition-colors">
-                    <Map className="w-6 h-6 text-secondary-600" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold mb-2 text-gray-800">Nationwide Coverage</h3>
-                    <p className="text-sm text-gray-600 leading-relaxed">
-                      Extensive reach across the whole Myanmar territory
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </ScrollAnimation>
-
-            {/* Card 4: Branch Offices */}
-            <ScrollAnimation direction="up" delay={250}>
-              <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 group">
-                <div className="flex items-start gap-4">
-                  <div className="bg-secondary-500/10 rounded-lg p-3 group-hover:bg-secondary-500/20 transition-colors">
-                    <MapPin className="w-6 h-6 text-secondary-600" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold mb-2 text-gray-800">Branch Offices</h3>
-                    <p className="text-sm text-gray-600 leading-relaxed">
-                      Strategic locations for better service delivery
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </ScrollAnimation>
-
-            {/* Card 5: Frequently Update Reports */}
-            <ScrollAnimation direction="up" delay={300}>
-              <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 group">
-                <div className="flex items-start gap-4">
-                  <div className="bg-secondary-500/10 rounded-lg p-3 group-hover:bg-secondary-500/20 transition-colors">
-                    <Smartphone className="w-6 h-6 text-secondary-600" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold mb-2 text-gray-800">Frequently Update Reports</h3>
-                    <p className="text-sm text-gray-600 leading-relaxed">
-                      Real-time updates and transparent communication
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </ScrollAnimation>
-
-            {/* Card 6: Customer Satisfaction */}
-            <ScrollAnimation direction="up" delay={350}>
-              <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 group">
-                <div className="flex items-start gap-4">
-                  <div className="bg-secondary-500/10 rounded-lg p-3 group-hover:bg-secondary-500/20 transition-colors">
-                    <Smile className="w-6 h-6 text-secondary-600" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold mb-2 text-gray-800">Customer Satisfaction</h3>
-                    <p className="text-sm text-gray-600 leading-relaxed">
-                      Commitment to complete satisfaction and quality service
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </ScrollAnimation>
+              </ScrollAnimation>
+            ))}
           </div>
         </div>
       </section>
@@ -508,43 +402,27 @@ export default async function HomePage() {
       <ClientShowcase />
 
       {/* Subsidiaries */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-16 md:py-20 bg-white">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollAnimation direction="up" delay={100}>
-            <div className="text-center mb-16">
-              <h2 className="text-3xl md:text-4xl font-bold mb-3 text-gray-900">Our Subsidiaries</h2>
-              <p className="text-gray-600 max-w-xl mx-auto">
-                Explore our diverse portfolio of specialized business units
-              </p>
+            <div className="text-center mb-10 md:mb-12">
+              <h2 className="text-3xl md:text-4xl font-semibold text-[#0F2942] mb-3">Our Subsidiaries</h2>
+              <p className="text-gray-600 max-w-xl mx-auto text-base">Explore our diverse portfolio of specialized business units</p>
             </div>
           </ScrollAnimation>
-          
           <div className="grid md:grid-cols-2 gap-6">
             {subsidiaries.map((sub, index) => (
               <ScrollAnimation key={sub.id || sub.path} direction="up" delay={100 + index * 50}>
-                <Link
-                  href={sub.path}
-                  className="block bg-white rounded-lg p-8 hover:shadow-md transition-shadow duration-300 border-l-4 border-transparent hover:border-primary-500 overflow-hidden"
-                >
+                <Link href={sub.path} className="card-ret block p-6 md:p-8 hover-lift border-l-4 border-[#1A4A94] group">
                   <div className="flex gap-6">
                     {sub.imageUrl && (
                       <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden">
-                        <Image
-                          src={sub.imageUrl}
-                          alt={sub.name}
-                          fill
-                          className="object-cover"
-                          sizes="96px"
-                        />
+                        <Image src={sub.imageUrl} alt={sub.name} fill className="object-cover" sizes="96px" />
                       </div>
                     )}
                     <div className="flex-1">
-                      <h3 className="text-xl font-bold mb-3 text-gray-900">
-                        {sub.name}
-                      </h3>
-                      <p className="text-gray-600 leading-relaxed">
-                        {sub.description}
-                      </p>
+                      <h3 className="text-lg font-semibold mb-2 text-[#0F2942] group-hover:text-[#1A4A94] transition-colors">{sub.name}</h3>
+                      <p className="text-gray-600 text-sm leading-relaxed">{sub.description}</p>
                     </div>
                   </div>
                 </Link>
@@ -555,33 +433,21 @@ export default async function HomePage() {
       </section>
 
       {/* Organizational Structure */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-16 md:py-20 bg-[#F8F9FA]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollAnimation direction="up" delay={100}>
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-              <div className="p-6 border-b border-gray-100">
-                <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-gray-800">Organizational Structure</h2>
-                <p className="text-gray-600 text-sm mt-2 text-center">
-                  Visual overview of leadership, functional managers, and teams.
-                </p>
+            <div className="card-ret overflow-hidden">
+              <div className="p-6 md:p-8 border-b border-[#E9ECEF]">
+                <h2 className="text-2xl md:text-3xl font-semibold text-center text-[#0F2942] mb-2">Organizational Structure</h2>
+                <p className="text-gray-600 text-sm text-center">Visual overview of leadership, functional managers, and teams.</p>
               </div>
-              <div className="relative w-full h-[420px] bg-gray-50">
-                <Image
-                  src={orgChartUrl}
-                  alt="Organization Chart"
-                  fill
-                  className="object-contain p-6"
-                  sizes="(max-width: 1024px) 100vw, 1024px"
-                  priority
-                />
+              <div className="relative w-full h-[320px] md:h-[420px] bg-[#F8F9FA]">
+                <Image src={orgChartUrl} alt="Organization Chart" fill className="object-contain p-6" sizes="(max-width: 1024px) 100vw, 1024px" priority />
               </div>
               {orgChartUrl === '/org/organization-chart.png' && (
-                <div className="px-6 py-4 bg-gray-50 text-xs text-gray-500">
+                <div className="px-6 py-4 bg-[#F8F9FA] text-xs text-gray-500">
                   Upload an organization chart in{' '}
-                  <Link href="/admin/settings" className="text-primary-600 hover:underline">
-                    Admin Settings
-                  </Link>
-                  .
+                  <Link href="/admin/settings" className="text-[#1A4A94] hover:text-[#FFC107] transition-colors font-medium">Admin Settings</Link>.
                 </div>
               )}
             </div>
@@ -590,67 +456,40 @@ export default async function HomePage() {
       </section>
 
       {/* Legal Documents */}
-      <section className="py-20 bg-gradient-to-b from-white to-gray-50">
+      <section className="py-16 md:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollAnimation direction="up" delay={100}>
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold mb-4 gradient-text">Legal Documents</h2>
-              <div className="w-24 h-1 bg-gradient-to-r from-primary-500 to-secondary-500 mx-auto rounded-full"></div>
+            <div className="text-center mb-10 md:mb-12">
+              <h2 className="text-3xl md:text-4xl font-semibold text-[#0F2942] mb-3">Legal Documents</h2>
+              <div className="w-16 h-1 bg-[#FFC107] mx-auto rounded-full" />
             </div>
           </ScrollAnimation>
-          
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {(documents.length > 0 ? documents : featuredLegalDocs).map((doc, idx) => {
-              // Use documentUrl as image source if available, otherwise fallback to imageUrl or placeholder
+            {(documents.length > 0 ? documents : featuredLegalDocs).map((doc: { id?: string; title: string; description?: string; documentUrl?: string; imageUrl?: string; type?: string }, idx: number) => {
               const imageSrc = (doc as any).documentUrl || (doc as any).imageUrl || placeholderImage
               const hasDocument = (doc as any).documentUrl || (doc as any).imageUrl
-
               return (
                 <ScrollAnimation key={(doc as any).id ?? idx} direction="up" delay={100 + idx * 100}>
-                  <div className="card-modern bg-white flex flex-col group hover-lift image-overlay">
-                    <div className="relative h-80 w-full bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden">
-                      <Image
-                        src={imageSrc}
-                        alt={doc.title}
-                        fill
-                        className="object-contain p-4 group-hover:scale-105 transition-transform duration-500"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      />
+                  <div className="card-ret flex flex-col group hover-lift overflow-hidden">
+                    <div className="relative h-64 w-full bg-[#F8F9FA] overflow-hidden">
+                      <Image src={imageSrc} alt={doc.title} fill className="object-contain p-4 group-hover:scale-105 transition-transform duration-300" sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" />
                     </div>
                     <div className="p-6 flex-1 flex flex-col">
-                      <div className="mb-3">
-                        {(doc as any).type && (
-                          <span className="text-xs font-semibold text-primary-600 uppercase bg-primary-50 px-3 py-1 rounded-full">
-                            {(doc as any).type}
-                          </span>
-                        )}
-                      </div>
-                      <h3 className="text-lg font-semibold mb-3 text-gray-800 group-hover:text-primary-600 transition-colors">
-                        {doc.title}
-                      </h3>
-                      {(doc as any).description && (
-                        <p className="text-gray-600 text-sm mb-4 leading-relaxed flex-1">
-                          {(doc as any).description}
-                        </p>
+                      {(doc as any).type && (
+                        <span className="text-xs font-semibold text-[#1A4A94] uppercase bg-[#1A4A94]/10 px-3 py-1 rounded-full inline-block mb-3 w-fit">
+                          {(doc as any).type}
+                        </span>
                       )}
+                      <h3 className="text-base font-semibold mb-2 text-[#0F2942] group-hover:text-[#1A4A94] transition-colors">{doc.title}</h3>
+                      {(doc as any).description && <p className="text-gray-600 text-sm mb-4 leading-relaxed flex-1">{(doc as any).description}</p>}
                       {hasDocument ? (
-                        <a
-                          href={(doc as any).documentUrl || (doc as any).imageUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary-600 hover:text-primary-700 text-sm font-medium mt-auto inline-flex items-center gap-2 group/link"
-                        >
+                        <a href={(doc as any).documentUrl || (doc as any).imageUrl} target="_blank" rel="noopener noreferrer" className="text-[#1A4A94] hover:text-[#FFC107] text-sm font-medium mt-auto inline-flex items-center gap-2 transition-colors">
                           <span>View Full Document</span>
-                          <svg className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                          </svg>
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
                         </a>
                       ) : (
                         <p className="text-xs text-gray-500 mt-auto">
-                          Upload documents in{' '}
-                          <Link href="/admin/legal-documents" className="text-primary-600 hover:underline font-medium">
-                            Admin → Legal Documents
-                          </Link>
+                          Upload in <Link href="/admin/legal-documents" className="text-[#1A4A94] hover:text-[#FFC107] font-medium">Admin → Legal Documents</Link>
                         </p>
                       )}
                     </div>
