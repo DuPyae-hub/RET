@@ -186,9 +186,9 @@ export default function ClientShowcase() {
                 {filteredClients.map((client) => (
                   <div
                     key={client.id}
-                    className="card-ret p-4 flex items-center justify-center h-28 md:h-32 hover:border-[#1A4A94]/30 transition-colors group"
+                    className="card-ret p-3 box-border min-w-0 aspect-square flex items-center justify-center"
                   >
-                    <div className="relative w-full h-full grayscale group-hover:grayscale-0 opacity-70 group-hover:opacity-100 transition-all duration-300">
+                    <div className="relative w-3/4 h-3/4 overflow-hidden">
                       <Image
                         src={
                           client.logoUrl ||
@@ -196,7 +196,7 @@ export default function ClientShowcase() {
                         }
                         alt={client.name}
                         fill
-                        className="object-contain p-2"
+                        className="object-contain object-center p-2"
                         sizes="(max-width: 768px) 50vw, (max-width: 1024px) 25vw, 16vw"
                       />
                     </div>
@@ -239,10 +239,10 @@ export default function ClientShowcase() {
                         {page.map((client) => (
                           <div
                             key={client.id}
-                            className="card-ret p-4 flex items-center justify-center h-28 md:h-32 transition-colors group box-border min-w-0"
+                            className="card-ret p-3 box-border min-w-0 aspect-square flex items-center justify-center"
                             style={{ flex: `0 0 ${100 / perPage}%` }}
                           >
-                            <div className="relative w-full h-full grayscale group-hover:grayscale-0 opacity-70 group-hover:opacity-100 transition-all duration-300">
+                            <div className="relative w-3/4 h-3/4 overflow-hidden">
                               <Image
                                 src={
                                   client.logoUrl ||
@@ -250,7 +250,7 @@ export default function ClientShowcase() {
                                 }
                                 alt={client.name}
                                 fill
-                                className="object-contain p-2"
+                                className="object-contain object-center p-2"
                                 sizes="(max-width: 768px) 50vw, (max-width: 1024px) 25vw, 16vw"
                               />
                             </div>
