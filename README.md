@@ -178,17 +178,21 @@ Navigate to `/admin` to access the admin dashboard. In production, you should ad
 
 ## Image Management
 
-Currently, the system uses placeholder URLs or Cloudinary URLs. To enable image uploads:
+Images are stored in the database (no filesystem or external service needed). This ensures they persist across deploys.
 
-1. Set up a Cloudinary account
-2. Add Cloudinary credentials to `.env`:
-```env
-CLOUDINARY_CLOUD_NAME=your-cloud-name
-CLOUDINARY_API_KEY=your-api-key
-CLOUDINARY_API_SECRET=your-api-secret
+1. Run the image storage migration in phpMyAdmin → SQL tab:
+```sql
+CREATE TABLE IF NOT EXISTS `image_storage` (
+  `id` varchar(191) NOT NULL,
+  `data` mediumblob NOT NULL,
+  `mime_type` varchar(100) NOT NULL,
+  `created_at` datetime(3) NOT NULL DEFAULT current_timestamp(3),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ```
 
-3. Implement image upload functionality in the admin forms (can be added later)
+2. New uploads are saved to `image_storage` and served from `/api/image/{id}`.
+3. Existing URLs (`/uploads/...`, `/images/...`, external URLs) continue to work as before.
 
 ## Production Deployment
 

@@ -10,6 +10,12 @@ const nextConfig = {
         protocol: 'http',
         hostname: '**',
       },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '3000',
+        pathname: '/api/image/**',
+      },
     ],
     domains: ['res.cloudinary.com', 'via.placeholder.com', 'images.unsplash.com'],
   },

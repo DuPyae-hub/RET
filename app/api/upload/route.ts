@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { writeFile, mkdir } from 'fs/promises'
-import { join } from 'path'
-import { existsSync } from 'fs'
+import { query } from '@/lib/db'
+import { randomUUID } from 'crypto'
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,27 +23,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'File size exceeds 5MB limit' }, { status: 400 })
     }
 
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = join(process.cwd(), 'public', 'uploads')
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true })
-    }
-
-    // Generate unique filename
-    const timestamp = Date.now()
-    const randomStr = Math.random().toString(36).substring(2, 15)
-    const extension = file.name.split('.').pop()
-    const filename = `${timestamp}-${randomStr}.${extension}`
-    const filepath = join(uploadsDir, filename)
-
-    // Save file
+    // Read file as buffer
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
-    await writeFile(filepath, buffer)
 
-    // Return the public URL
-    const publicUrl = `/uploads/${filename}`
-    return NextResponse.json({ url: publicUrl, filename })
+    // Save to database (persists forever, no filesystem dependency)
+    const id = randomUUID()
+    await query(
+      `INSERT INTO image_storage (id, data, mime_type) VALUES (:id, :data, :mime_type)`,
+      {
+        id,
+        data: buffer,
+        mime_type: file.type,
+      }
+    )
+
+    // Return URL that serves from database
+    const publicUrl = `/api/image/${id}`
+    return NextResponse.json({ url: publicUrl, filename: file.name })
   } catch (error) {
     console.error('Error uploading file:', error)
     return NextResponse.json(
