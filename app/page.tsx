@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import ClientShowcase from "@/components/ClientShowcase";
 import ScrollAnimation from "@/components/ScrollAnimation";
-import LiveSearchClient from '@/components/LiveSearchClient'
 
 // Force dynamic rendering to ensure settings updates are reflected immediately
 export const dynamic = "force-dynamic";
@@ -425,7 +424,7 @@ export default async function HomePage() {
           className="absolute inset-0 hero-pattern opacity-100"
           aria-hidden
         />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 relative z-10">
           <ScrollAnimation direction="fade" delay={100}>
             <span className="inline-block text-white/80 text-sm font-semibold uppercase tracking-wider mb-4">
               Since 2007
@@ -444,15 +443,12 @@ export default async function HomePage() {
               & Media Services across the whole Myanmar territory.
             </p>
           </ScrollAnimation>
-          <div className="mt-8">
-            <LiveSearchClient />
-          </div>
         </div>
       </section>
 
       {/* Mission & Vision */}
       <section className="py-16 md:py-20 bg-[#F8F9FA]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
           <div className="grid md:grid-cols-2 gap-6 md:gap-8">
             <ScrollAnimation direction="right" delay={100}>
               <div className="card-ret bg-white p-6 md:p-8 border-l-4 border-[#1A4A94] hover-lift shadow-md ring-1 ring-gray-100 rounded-lg">
@@ -494,7 +490,7 @@ export default async function HomePage() {
           className="absolute inset-0 hero-pattern opacity-100"
           aria-hidden
         />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 relative z-10">
           <div className="grid md:grid-cols-2 gap-6 md:gap-8">
             <ScrollAnimation direction="right" delay={100}>
               <div className="card-ret bg-white p-6 md:p-8 border border-[#E9ECEF] hover-lift">
@@ -532,7 +528,7 @@ export default async function HomePage() {
 
       {/* History */}
       <section className="py-16 md:py-20 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto px-3 sm:px-4 lg:px-6">
           <ScrollAnimation direction="up" delay={100}>
             <div className="text-center mb-8 md:mb-12">
               <h2 className="text-3xl md:text-4xl font-semibold text-[#0F2942] mb-3">
@@ -553,7 +549,7 @@ export default async function HomePage() {
 
       {/* Our Strong Points */}
       <section className="py-16 md:py-20 bg-[#F8F9FA]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
           <ScrollAnimation direction="up" delay={100}>
             <div className="text-center mb-10 md:mb-12">
               <h2 className="text-3xl md:text-4xl font-semibold text-[#0F2942] mb-3">
@@ -629,7 +625,7 @@ export default async function HomePage() {
 
       {/* Subsidiaries */}
       <section className="py-16 md:py-20 bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6">
           <ScrollAnimation direction="up" delay={100}>
             <div className="text-center mb-10 md:mb-12">
               <h2 className="text-3xl md:text-4xl font-semibold text-[#0F2942] mb-3">
@@ -681,7 +677,7 @@ export default async function HomePage() {
 
       {/* Organizational Structure */}
       <section className="py-16 md:py-20 bg-[#F8F9FA]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
           <ScrollAnimation direction="up" delay={100}>
             <div className="card-ret overflow-hidden">
               <div className="p-6 md:p-8 border-b border-[#E9ECEF]">
@@ -721,7 +717,7 @@ export default async function HomePage() {
 
       {/* Legal Documents */}
       <section className="py-16 md:py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
           <ScrollAnimation direction="up" delay={100}>
             <div className="text-center mb-10 md:mb-12">
               <h2 className="text-3xl md:text-4xl font-semibold text-[#0F2942] mb-3">

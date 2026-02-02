@@ -61,7 +61,7 @@ export default function Navigation() {
             <nav className="flex items-center gap-8">
               <Link
                 href="/"
-                className={`relative text-xs font-medium tracking-wide pb-2 transition-colors after:absolute after:left-1/2 after:-translate-x-1/2 after:bottom-0 after:h-1 after:w-16 after:bg-amber-400 after:transform after:scale-x-0 after:origin-center after:transition-transform after:duration-300 ${isActive("/") ? "text-white after:scale-x-100" : "text-white/90 hover:text-white hover:after:scale-x-100"}`}
+                className={`relative text-sm font-semibold tracking-wide pb-2 transition-colors after:absolute after:left-1/2 after:-translate-x-1/2 after:bottom-0 after:h-1 after:w-16 after:bg-amber-400 after:transform after:scale-x-0 after:origin-center after:transition-transform after:duration-300 ${isActive("/") ? "text-white after:scale-x-100" : "text-white/90 hover:text-white hover:after:scale-x-100"}`}
               >
                 Group Overview
               </Link>
@@ -70,7 +70,7 @@ export default function Navigation() {
                 <Link
                   key={sub.path}
                   href={sub.path}
-                  className={`relative text-xs font-medium tracking-wide pb-2 transition-colors after:absolute after:left-1/2 after:-translate-x-1/2 after:bottom-0 after:h-1 after:w-16 after:bg-amber-400 after:transform after:scale-x-0 after:origin-center after:transition-transform after:duration-300 ${isActive(sub.path) ? "text-white after:scale-x-100" : "text-white/90 hover:text-white hover:after:scale-x-100"}`}
+                  className={`relative text-sm font-semibold tracking-wide pb-2 transition-colors after:absolute after:left-1/2 after:-translate-x-1/2 after:bottom-0 after:h-1 after:w-16 after:bg-amber-400 after:transform after:scale-x-0 after:origin-center after:transition-transform after:duration-300 ${isActive(sub.path) ? "text-white after:scale-x-100" : "text-white/90 hover:text-white hover:after:scale-x-100"}`}
                 >
                   {sub.name}
                 </Link>
