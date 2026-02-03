@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import ClientShowcase from "@/components/ClientShowcase";
 import ScrollAnimation from "@/components/ScrollAnimation";
+import StatsCards from "@/components/StatsCards";
 
 // Force dynamic rendering to ensure settings updates are reflected immediately
 export const dynamic = "force-dynamic";
@@ -385,11 +386,29 @@ async function getSubsidiaries() {
   }
 }
 
+async function getCounts() {
+  try {
+    const rows = await query<{ projects: number; clients: number }[]>(
+      `SELECT (SELECT COUNT(*) FROM Project) AS projects, (SELECT COUNT(*) FROM Client) AS clients`,
+    );
+    const r =
+      Array.isArray(rows) && rows[0] ? rows[0] : { projects: 0, clients: 0 };
+    return {
+      projects: Number(r.projects || 0),
+      clients: Number(r.clients || 0),
+    };
+  } catch (error) {
+    console.error("Error fetching counts:", error);
+    return { projects: 0, clients: 0 };
+  }
+}
+
 export default async function HomePage() {
   const settings = await getSiteSettings();
   const documents = await getLegalDocuments();
   const orgChartUrl = await getOrganizationChartUrl();
   const subsidiaries = await getSubsidiaries();
+  const counts = await getCounts();
 
   const placeholderImage =
     "https://via.placeholder.com/800x600?text=Document+Preview";
@@ -446,43 +465,16 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Mission & Vision */}
-      <section className="py-16 md:py-20 bg-[#F8F9FA]">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
-          <div className="grid md:grid-cols-2 gap-6 md:gap-8">
-            <ScrollAnimation direction="right" delay={100}>
-              <div className="card-ret bg-white p-6 md:p-8 border-l-4 border-[#1A4A94] hover-lift shadow-md ring-1 ring-gray-100 rounded-lg">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-[#1A4A94] rounded-full flex items-center justify-center">
-                    <Sparkles className="w-6 h-6 text-[#FFC107]" />
-                  </div>
-                  <h2 className="text-xl md:text-2xl font-semibold text-[#0F2942]">
-                    Our Mission
-                  </h2>
-                </div>
-                <p className="text-black text-base leading-relaxed">
-                  {settings.mission}
-                </p>
-              </div>
-            </ScrollAnimation>
-            <ScrollAnimation direction="left" delay={200}>
-              <div className="card-ret bg-white p-6 md:p-8 border-l-4 border-[#1A4A94] hover-lift shadow-md ring-1 ring-gray-100 rounded-lg">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 bg-[#1A4A94] rounded-full flex items-center justify-center">
-                    <Sparkles className="w-6 h-6 text-[#FFC107]" />
-                  </div>
-                  <h2 className="text-xl md:text-2xl font-semibold text-[#0F2942]">
-                    Our Vision
-                  </h2>
-                </div>
-                <p className="text-black text-base leading-relaxed">
-                  {settings.vision}
-                </p>
-              </div>
-            </ScrollAnimation>
-          </div>
-        </div>
-      </section>
+      {/* Stats Cards */}
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 mt-12 mb-12 relative z-10">
+        <StatsCards
+          counts={counts}
+          mission={settings.mission}
+          vision={settings.vision}
+        />
+      </div>
+
+      {/* Mission & Vision moved into StatsCards */}
 
       {/* Attitude & Core Values */}
       <section className="py-16 md:py-20 bg-[#1A4A94] relative overflow-hidden">
