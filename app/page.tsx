@@ -467,14 +467,8 @@ export default async function HomePage() {
 
       {/* Stats Cards */}
       <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 mt-12 mb-12 relative z-10">
-        <StatsCards
-          counts={counts}
-          mission={settings.mission}
-          vision={settings.vision}
-        />
+        <StatsCards counts={counts} />
       </div>
-
-      {/* Mission & Vision moved into StatsCards */}
 
       {/* Attitude & Core Values */}
       <section className="py-16 md:py-20 bg-[#1A4A94] relative overflow-hidden">
@@ -483,7 +477,38 @@ export default async function HomePage() {
           aria-hidden
         />
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 relative z-10">
-          <div className="grid md:grid-cols-2 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+            <ScrollAnimation direction="up" delay={250}>
+              <div className="card-ret bg-white p-6 md:p-8 border border-[#E9ECEF] hover-lift">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-[#1A4A94]/10 rounded-full flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 text-[#1A4A94]" />
+                  </div>
+                  <h3 className="text-xl md:text-2xl font-semibold text-[#0F2942]">
+                    Our Mission
+                  </h3>
+                </div>
+                <p className="text-gray-600 leading-relaxed">
+                  {settings.mission}
+                </p>
+              </div>
+            </ScrollAnimation>
+
+            <ScrollAnimation direction="up" delay={300}>
+              <div className="card-ret bg-white p-6 md:p-8 border border-[#E9ECEF] hover-lift">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-[#1A4A94]/10 rounded-full flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 text-[#1A4A94]" />
+                  </div>
+                  <h3 className="text-xl md:text-2xl font-semibold text-[#0F2942]">
+                    Our Vision
+                  </h3>
+                </div>
+                <p className="text-gray-600 leading-relaxed">
+                  {settings.vision}
+                </p>
+              </div>
+            </ScrollAnimation>
             <ScrollAnimation direction="right" delay={100}>
               <div className="card-ret bg-white p-6 md:p-8 border border-[#E9ECEF] hover-lift">
                 <div className="flex items-center gap-3 mb-4">
@@ -499,6 +524,7 @@ export default async function HomePage() {
                 </p>
               </div>
             </ScrollAnimation>
+
             <ScrollAnimation direction="left" delay={200}>
               <div className="card-ret bg-white p-6 md:p-8 border border-[#E9ECEF] hover-lift">
                 <div className="flex items-center gap-3 mb-4">

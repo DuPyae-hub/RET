@@ -1,130 +1,128 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Users, Briefcase, Sparkles } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import ScrollAnimation from "@/components/ScrollAnimation";
 
-export default function StatsCards({
-  counts,
-  mission,
-  vision,
+type StatsCounts = {
+  projects: number;
+  clients: number;
+};
+
+type StatsCardsProps = {
+  counts: StatsCounts;
+};
+
+function animateCount(target: number, setValue: (n: number) => void) {
+  const durationMs = 1200;
+  const start = performance.now();
+  let frameId = 0;
+
+  const tick = (now: number) => {
+    const t = Math.min(1, (now - start) / durationMs);
+    // Quartic ease-out for a smooth "landing"
+    const ease = 1 - Math.pow(1 - t, 4);
+    setValue(Math.round(target * ease));
+    if (t < 1) frameId = requestAnimationFrame(tick);
+  };
+
+  frameId = requestAnimationFrame(tick);
+  return () => cancelAnimationFrame(frameId);
+}
+
+function StatItem({
+  value,
+  label,
+  href,
+  cta,
+  delay,
+  className = "",
 }: {
-  counts: { projects: number; clients: number };
-  mission: string;
-  vision: string;
+  value: number;
+  label: string;
+  href: string;
+  cta: string;
+  delay: number;
+  className?: string;
 }) {
+  const fmt = useMemo(() => new Intl.NumberFormat(), []);
+  return (
+    <ScrollAnimation direction="up" delay={delay}>
+      <div
+        className={`flex flex-col items-center justify-center text-center px-3 py-6 md:px-4 md:py-8 ${className}`}
+      >
+        <div
+          className="text-5xl md:text-6xl lg:text-7xl font-black text-[#1A4A94] tracking-tight"
+          aria-label={`${fmt.format(value)} ${label}`}
+        >
+          {fmt.format(value)}
+        </div>
+        <div className="text-[11px] md:text-sm font-semibold uppercase tracking-[0.3em] text-gray-600 mt-3">
+          {label}
+        </div>
+        <Link
+          href={href}
+          className="mt-4 inline-flex items-center justify-center rounded-[12px] border border-[#FFC107] px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-[#1A4A94] bg-white hover:bg-[#FFC107] hover:text-[#0F2942] transition-colors"
+        >
+          {cta} →
+        </Link>
+      </div>
+    </ScrollAnimation>
+  );
+}
+
+export default function StatsCards({ counts }: StatsCardsProps) {
+  const projectsCount = Number(counts?.projects ?? 0);
+  const clientsCount = Number(counts?.clients ?? 0);
+
   const [visibleProjects, setVisibleProjects] = useState(0);
   const [visibleClients, setVisibleClients] = useState(0);
 
   useEffect(() => {
-    const duration = 900;
-    const start = performance.now();
-
-    const animate = (now: number) => {
-      const t = Math.min(1, (now - start) / duration);
-      const ease = 1 - Math.pow(1 - t, 3);
-      setVisibleProjects(Math.round(counts.projects * ease));
-      setVisibleClients(Math.round(counts.clients * ease));
-      if (t < 1) requestAnimationFrame(animate);
+    const stopA = animateCount(projectsCount, setVisibleProjects);
+    const stopB = animateCount(clientsCount, setVisibleClients);
+    return () => {
+      stopA();
+      stopB();
     };
-
-    requestAnimationFrame(animate);
-  }, [counts]);
-
-  const fmt = (n: number) => n.toLocaleString();
-  const truncate = (s: string, len = 140) =>
-    s.length > len ? s.slice(0, len).trim() + "…" : s;
+  }, [projectsCount, clientsCount]);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch pb-6 md:pb-8">
-      {/* Left column: counts stacked (two even rows) */}
-      <div className="grid grid-rows-2 gap-4 h-full">
-        <ScrollAnimation direction="up" delay={90}>
-          <div className="card-ret bg-white p-4 md:p-6 border-l-4 border-[#1A4A94] shadow-md ring-1 ring-gray-100 rounded-lg transform-gpu transition-transform duration-300 ease-out hover:-translate-y-1 hover:shadow-lg h-full flex flex-col justify-between min-h-[140px]">
-            <div className="flex items-center gap-4">
-              <div className="bg-[#1A4A94]/10 p-2.5 rounded-md">
-                <Briefcase className="w-6 h-6 text-[#1A4A94]" />
-              </div>
-              <div>
-                <div
-                  className="text-2xl md:text-3xl font-extrabold text-[#1A4A94]"
-                  aria-live="polite"
-                >
-                  {fmt(visibleProjects)}
-                </div>
-                <div className="text-sm text-gray-600">On Going Projects</div>
-              </div>
-            </div>
-            <div className="mt-3">
-              <Link
-                href="/admin/projects"
-                className="text-sm font-medium text-[#1A4A94] hover:text-[#FFC107]"
-              >
-                View Projects →
-              </Link>
-            </div>
-          </div>
-        </ScrollAnimation>
+    <section className="w-full text-[#0F2942] py-6 md:py-8">
+      <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-stretch justify-center">
+        {/* Projects */}
+        <div className="flex-1">
+          <StatItem
+            value={visibleProjects}
+            label="Projects Completed"
+            href="/admin/projects"
+            cta="View Projects"
+            delay={100}
+          />
+        </div>
 
-        <ScrollAnimation direction="up" delay={180}>
-          <div className="card-ret bg-white p-4 md:p-6 border-l-4 border-[#1A4A94] shadow-md ring-1 ring-gray-100 rounded-lg transform-gpu transition-transform duration-300 ease-out hover:-translate-y-1 hover:shadow-lg h-full flex flex-col justify-between min-h-[140px]">
-            <div className="flex items-center gap-4">
-              <div className="bg-[#1A4A94]/10 p-2.5 rounded-md">
-                <Users className="w-6 h-6 text-[#1A4A94]" />
-              </div>
-              <div>
-                <div
-                  className="text-2xl md:text-3xl font-extrabold text-[#1A4A94]"
-                  aria-live="polite"
-                >
-                  {fmt(visibleClients)}
-                </div>
-                <div className="text-sm text-gray-600">Clients</div>
-              </div>
-            </div>
-            <div className="mt-3">
-              <Link
-                href="/admin/clients"
-                className="text-sm font-medium text-[#1A4A94] hover:text-[#FFC107]"
-              >
-                View Clients →
-              </Link>
-            </div>
-          </div>
-        </ScrollAnimation>
+        {/* Blue separator line: vertical on desktop, horizontal on mobile */}
+        <div
+          className="flex items-center justify-center my-1 md:my-0"
+          aria-hidden="true"
+        >
+          {/* Horizontal line on mobile */}
+          <div className="md:hidden h-[3px] w-16 bg-[#0B2C66] rounded-full" />
+          {/* Vertical line on desktop */}
+          <div className="hidden md:block w-[3px] h-24 bg-[#0B2C66] rounded-full" />
+        </div>
+
+        {/* Clients */}
+        <div className="flex-1">
+          <StatItem
+            value={visibleClients}
+            label="Satisfied Clients"
+            href="/admin/clients"
+            cta="View Clients"
+            delay={200}
+          />
+        </div>
       </div>
-
-      {/* Right column: mission & vision stacked (two even rows) */}
-      <div className="grid grid-rows-2 gap-4 h-full">
-        <ScrollAnimation direction="up" delay={135}>
-          <div className="card-ret bg-white p-4 md:p-6 border-l-4 border-[#1A4A94] shadow-md ring-1 ring-gray-100 rounded-lg transform-gpu transition-transform duration-300 ease-out hover:-translate-y-1 hover:shadow-lg h-full flex flex-col justify-between min-h-[140px]">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 bg-[#1A4A94] rounded-full flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-[#FFC107]" />
-              </div>
-              <h3 className="text-lg font-semibold text-[#0F2942]">
-                Our Mission
-              </h3>
-            </div>
-            <p className="text-sm text-black leading-relaxed">{mission}</p>
-          </div>
-        </ScrollAnimation>
-
-        <ScrollAnimation direction="up" delay={225}>
-          <div className="card-ret bg-white p-4 md:p-6 border-l-4 border-[#1A4A94] shadow-md ring-1 ring-gray-100 rounded-lg transform-gpu transition-transform duration-300 ease-out hover:-translate-y-1 hover:shadow-lg h-full flex flex-col justify-between min-h-[140px]">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 bg-[#1A4A94] rounded-full flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-[#FFC107]" />
-              </div>
-              <h3 className="text-lg font-semibold text-[#0F2942]">
-                Our Vision
-              </h3>
-            </div>
-            <p className="text-sm text-black leading-relaxed">{vision}</p>
-          </div>
-        </ScrollAnimation>
-      </div>
-    </div>
+    </section>
   );
 }

@@ -43,7 +43,7 @@ export default function Navigation() {
                 alt="RET"
                 width={64}
                 height={64}
-                className="rounded-sm shadow-sm"
+                className="rounded-sm shadow-sm h-auto w-auto"
               />
               <div className="hidden sm:flex flex-col leading-none">
                 <span className="text-sm font-extrabold text-sky-900">
