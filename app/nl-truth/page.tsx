@@ -6,30 +6,30 @@ async function getProjects() {
   try {
     return await query(
       "SELECT id, title, description, category, imageUrl, subsidiary, status, createdAt, updatedAt FROM Project WHERE subsidiary = :subsidiary ORDER BY createdAt DESC",
-      { subsidiary: "Inner True" },
+      { subsidiary: "NL Truth" },
     );
   } catch {
     return [];
   }
 }
 
-export default async function InnerTruePage() {
+export default async function NLTruthPage() {
   const projects = await getProjects();
 
   return (
     <SubsidiaryLayout
-      name="Inner True"
+      name="NL Truth"
       breadcrumbs={[
         { label: "Home", href: "/" },
-        { label: "Inner True", href: "/inner-true" },
+        { label: "NL Truth", href: "/nl-truth" },
       ]}
-      heroTitle="Inner True"
+      heroTitle="NL Truth"
       heroDescription="Your trusted partner in distribution and logistics across Telecom, Online Money, and FMCG sectors."
-      aboutTitle="About Inner True"
+      aboutTitle="About NL Truth"
       aboutContent={
         <>
           <p className="mb-4">
-            Inner True is a leading distribution and logistics company
+            NL Truth is a leading distribution and logistics company
             specializing in fast-moving consumer goods (FMCG),
             telecommunications products, and digital financial services. We
             ensure efficient, reliable delivery across Myanmar.
@@ -71,7 +71,7 @@ export default async function InnerTruePage() {
             </h2>
             <div className="card-ret p-8 max-w-3xl mx-auto">
               <p className="text-center text-gray-600 leading-relaxed">
-                Inner True maintains an extensive distribution network covering
+                NL Truth maintains an extensive distribution network covering
                 major cities and rural areas across Myanmar, ensuring timely and
                 efficient delivery of products to our partners and end
                 consumers.

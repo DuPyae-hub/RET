@@ -26,7 +26,7 @@ const categories = [
 const subsidiaries = [
   "RET Advertising",
   "Million Zone",
-  "Inner True",
+  "NL Truth",
   "Agricultural Friends",
 ];
 

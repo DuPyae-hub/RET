@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 const subsidiaries = [
   { name: "RET Advertising", path: "/ret-advertising" },
   { name: "Million Zone", path: "/million-zone" },
-  { name: "Inner True", path: "/inner-true" },
+  { name: "NL Truth", path: "/nl-truth" },
   { name: "Agricultural Friends", path: "/agricultural-friends" },
 ];
 

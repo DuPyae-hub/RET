@@ -277,8 +277,8 @@ async function getSubsidiaries() {
           },
           {
             id: "sub-003",
-            name: "Inner True",
-            path: "/inner-true",
+            name: "NL Truth",
+            path: "/nl-truth",
             description:
               "Distribution and logistics (Telecom, Online Money, FMCG)",
             imageUrl:
@@ -368,8 +368,8 @@ async function getSubsidiaries() {
       },
       {
         id: "default-3",
-        name: "Inner True",
-        path: "/inner-true",
+        name: "NL Truth",
+        path: "/nl-truth",
         description: "Distribution and logistics (Telecom, Online Money, FMCG)",
         imageUrl: null,
         displayOrder: 3,
@@ -450,7 +450,7 @@ export default async function HomePage() {
             </span>
           </ScrollAnimation>
           <ScrollAnimation direction="up" delay={200}>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight text-white">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight text-yellow-400">
               Royal Ever Truth
               <br />
               Business Group

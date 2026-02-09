@@ -40,10 +40,10 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/inner-true"
+                  href="/nl-truth"
                   className="text-white/80 hover:text-[#FFC107] transition-colors"
                 >
-                  Inner True
+                  NL Truth
                 </Link>
               </li>
               <li>

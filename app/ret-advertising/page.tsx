@@ -10,20 +10,50 @@ const portfolioCategories = [
   'Signage',
 ]
 
+const MOCK_PROJECTS = [
+  {
+    id: 'mock-ret-1',
+    title: 'Nationwide Brand Refresh',
+    description:
+      'Full rebrand and visual identity rollout across Myanmar for a leading FMCG client. Included signage, vehicle livery, and point-of-sale materials delivered to 50+ locations.',
+    category: 'Nationwide Merchandising',
+    imageUrl: 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=600&fit=crop',
+    subsidiary: 'RET Advertising',
+    status: 'finished',
+  },
+  {
+    id: 'mock-ret-2',
+    title: 'Annual CSR Roadshow',
+    description:
+      'Event management and branding for a multi-city corporate social responsibility campaign. Stage design, collateral, and on-ground activation across 12 townships.',
+    category: 'Event Management',
+    imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop',
+    subsidiary: 'RET Advertising',
+    status: 'finished',
+  },
+]
+
 async function getProjects(category?: string) {
   try {
+    let dbProjects: any[] = []
     if (category && category !== 'All') {
-      return await query(
+      dbProjects = await query(
         'SELECT id, title, description, category, imageUrl, subsidiary, status, createdAt, updatedAt FROM Project WHERE subsidiary = :subsidiary AND category = :category ORDER BY createdAt DESC',
         { subsidiary: 'RET Advertising', category }
       )
+    } else {
+      dbProjects = await query(
+        'SELECT id, title, description, category, imageUrl, subsidiary, status, createdAt, updatedAt FROM Project WHERE subsidiary = :subsidiary ORDER BY createdAt DESC',
+        { subsidiary: 'RET Advertising' }
+      )
     }
-    return await query(
-      'SELECT id, title, description, category, imageUrl, subsidiary, status, createdAt, updatedAt FROM Project WHERE subsidiary = :subsidiary ORDER BY createdAt DESC',
-      { subsidiary: 'RET Advertising' }
-    )
+    const list = Array.isArray(dbProjects) ? dbProjects : []
+    if (category === 'All' || !category) {
+      return [...MOCK_PROJECTS, ...list]
+    }
+    return list
   } catch {
-    return []
+    return category === 'All' || !category ? MOCK_PROJECTS : []
   }
 }
 

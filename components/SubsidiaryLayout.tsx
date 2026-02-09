@@ -1,12 +1,11 @@
 import Breadcrumbs from "./Breadcrumbs";
-import ScrollAnimation from "./ScrollAnimation";
-import Image from "next/image";
 import Link from "next/link";
+import ProjectCardsWithModal, { type ProjectItem } from "./ProjectCardsWithModal";
 
 export const SUBSIDIARY_ACCENTS: Record<string, string> = {
   "RET Advertising": "#FFC107", // Gold
   "Million Zone": "#0D9488", // Teal
-  "Inner True": "#7C3AED", // Purple
+  "NL Truth": "#7C3AED", // Purple
   "Agricultural Friends": "#059669", // Green
 };
 
@@ -18,14 +17,7 @@ interface SubsidiaryLayoutProps {
   aboutTitle?: string;
   aboutContent?: React.ReactNode;
   projectsTitle?: string;
-  projects?: Array<{
-    id: string;
-    title: string;
-    description: string | null;
-    category?: string | null;
-    imageUrl: string;
-    status?: string | null;
-  }>;
+  projects?: ProjectItem[];
   servicesTitle?: string;
   services?: Array<{
     icon: React.ReactNode;
@@ -135,74 +127,7 @@ export default function SubsidiaryLayout({
               style={{ backgroundColor: accent }}
             />
           </div>
-          {projects.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-              {projects.map((project, index) => (
-                <ScrollAnimation
-                  key={project.id}
-                  direction="up"
-                  delay={100 + index * 50}
-                >
-                  <div className="card-ret overflow-hidden group hover-lift">
-                    <div className="relative h-56 w-full overflow-hidden">
-                      <Image
-                        src={
-                          project.imageUrl ||
-                          "https://via.placeholder.com/400x300?text=Project+Image"
-                        }
-                        alt={project.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      {project.status && (
-                        <div className="absolute top-3 right-3">
-                          <span
-                            className={`px-3 py-1 rounded-lg text-xs font-medium ${
-                              project.status === "ongoing"
-                                ? "bg-[#059669] text-white"
-                                : project.status === "finished"
-                                  ? "bg-gray-600 text-white"
-                                  : "bg-gray-500 text-white"
-                            }`}
-                          >
-                            {project.status.charAt(0).toUpperCase() +
-                              project.status.slice(1)}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-5 md:p-6">
-                      {project.category && (
-                        <span
-                          className="text-xs font-semibold uppercase px-3 py-1 rounded-full inline-block mb-2"
-                          style={{
-                            backgroundColor: `${accent}20`,
-                            color: accent,
-                          }}
-                        >
-                          {project.category}
-                        </span>
-                      )}
-                      <h3 className="text-base md:text-lg font-semibold mb-2 text-[#0F2942]">
-                        {project.title}
-                      </h3>
-                      {project.description && (
-                        <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
-                          {project.description}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </ScrollAnimation>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-500">
-                No projects to display at this time. Check back soon!
-              </p>
-            </div>
-          )}
+          <ProjectCardsWithModal projects={projects} accent={accent} />
         </div>
       </section>
 

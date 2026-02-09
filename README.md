@@ -10,7 +10,7 @@ Professional corporate website for Royal Ever True (RET) Business Group and its 
 - **Group Landing Page**: Overview of RET Business Group with History, Mission, Vision, Legal Documents, and Organizational Structure
 - **RET Advertising**: Portfolio showcase with category filtering (Nationwide Merchandising, Event Management, Building Paint Branding, Vehicle Branding, Signage)
 - **Million Zone**: Construction and infrastructure services with project status tracking (Ongoing/Finished)
-- **Inner True**: Distribution and logistics services (Telecom, Online Money, FMCG)
+- **NL Truth**: Distribution and logistics services (Telecom, Online Money, FMCG)
 - **Agricultural Friends**: Agricultural services overview
 
 ### Admin Dashboard
@@ -139,7 +139,7 @@ npm run dev
 │   ├── admin/            # Admin dashboard pages
 │   ├── ret-advertising/  # RET Advertising subsidiary page
 │   ├── million-zone/     # Million Zone subsidiary page
-│   ├── inner-true/       # Inner True subsidiary page
+│   ├── nl-truth/         # NL Truth subsidiary page
 │   ├── agricultural-friends/ # Agricultural Friends subsidiary page
 │   ├── layout.tsx        # Root layout
 │   └── page.tsx          # Landing page

@@ -247,7 +247,7 @@ CREATE TABLE IF NOT EXISTS `Subsidiary` (
 INSERT INTO `Subsidiary` (`id`, `name`, `path`, `description`, `imageUrl`, `displayOrder`) VALUES
 ('sub-001', 'RET Advertising', '/ret-advertising', 'Branding, production, and CSR services', NULL, 1),
 ('sub-002', 'Million Zone', '/million-zone', 'Construction, infrastructure, and rural electrification', NULL, 2),
-('sub-003', 'Inner True', '/inner-true', 'Distribution and logistics (Telecom, Online Money, FMCG)', NULL, 3),
+('sub-003', 'NL Truth', '/nl-truth', 'Distribution and logistics (Telecom, Online Money, FMCG)', NULL, 3),
 ('sub-004', 'Agricultural Friends', '/agricultural-friends', 'General agricultural services', NULL, 4);
 
 COMMIT;

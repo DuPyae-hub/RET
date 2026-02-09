@@ -21,8 +21,8 @@ const defaultSubsidiaries = [
   },
   {
     id: 'sub-003',
-    name: 'Inner True',
-    path: '/inner-true',
+    name: 'NL Truth',
+    path: '/nl-truth',
     description: 'Distribution and logistics (Telecom, Online Money, FMCG)',
     imageUrl: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&h=600&fit=crop&q=80',
     displayOrder: 3,
