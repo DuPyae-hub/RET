@@ -7,7 +7,7 @@ export async function GET(
 ) {
   try {
     const rows = await query(
-      'SELECT id, name, logoUrl, category, subsidiary, createdAt, updatedAt FROM Client WHERE id = :id LIMIT 1',
+      'SELECT id, name, "logoUrl", category, subsidiary, "createdAt", "updatedAt" FROM "Client" WHERE id = :id LIMIT 1',
       { id: params.id }
     )
     const client = (rows as any[])[0]
@@ -34,12 +34,12 @@ export async function PUT(
     const { name, logoUrl, category } = body
 
     await query(
-      `UPDATE Client
+      `UPDATE "Client"
        SET name = :name,
-           logoUrl = :logoUrl,
+           "logoUrl" = :logoUrl,
            category = :category,
            subsidiary = NULL,
-           updatedAt = NOW(3)
+           "updatedAt" = NOW()
        WHERE id = :id`,
       {
         id: params.id,
@@ -50,7 +50,7 @@ export async function PUT(
     )
 
     const rows = await query(
-      'SELECT id, name, logoUrl, category, subsidiary, createdAt, updatedAt FROM Client WHERE id = :id LIMIT 1',
+      'SELECT id, name, "logoUrl", category, subsidiary, "createdAt", "updatedAt" FROM "Client" WHERE id = :id LIMIT 1',
       { id: params.id }
     )
     const updated = (rows as any[])[0]
@@ -68,7 +68,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    await query('DELETE FROM Client WHERE id = :id', { id: params.id })
+    await query('DELETE FROM "Client" WHERE id = :id', { id: params.id })
 
     return NextResponse.json({ message: 'Client deleted successfully' })
   } catch (error) {

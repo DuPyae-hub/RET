@@ -39,7 +39,7 @@ async function getSiteSettings() {
 
   try {
     const rows = await query<{ key: string; value: string }[]>(
-      'SELECT `key`, `value` FROM site_settings WHERE `key` IN ("mission","vision","history","attitude","coreValues")',
+      'SELECT "key", "value" FROM site_settings WHERE "key" IN (\'mission\',\'vision\',\'history\',\'attitude\',\'coreValues\')',
     );
 
     // Handle mysql2 RowDataPacket format - it returns an array
@@ -95,7 +95,7 @@ async function getSiteSettings() {
 async function getLegalDocuments() {
   try {
     const rows = await query<any[]>(
-      "SELECT id, title, description, documentUrl, type, createdAt, updatedAt FROM LegalDocument ORDER BY createdAt DESC LIMIT 6",
+      'SELECT id, title, description, "documentUrl", type, "createdAt", "updatedAt" FROM "LegalDocument" ORDER BY "createdAt" DESC LIMIT 6',
     );
 
     const docs = Array.isArray(rows) ? rows : [];
@@ -214,7 +214,7 @@ async function getLegalDocuments() {
 async function getOrganizationChartUrl() {
   try {
     const settings = await query<{ value: string }[]>(
-      'SELECT `value` FROM site_settings WHERE `key` = "organizationChartUrl" LIMIT 1',
+      'SELECT "value" FROM site_settings WHERE "key" = \'organizationChartUrl\' LIMIT 1',
     );
     const raw = settings.length > 0 ? settings[0].value : null;
     const normalize = (v: string | null) => {
@@ -246,7 +246,7 @@ async function getSubsidiaries() {
     // First, check if table exists and is empty, then auto-seed
     try {
       const countResult = await query<{ count: number }[]>(
-        "SELECT COUNT(*) as count FROM Subsidiary",
+        'SELECT COUNT(*) as count FROM "Subsidiary"',
       );
 
       const countArray = Array.isArray(countResult) ? countResult : [];
@@ -301,8 +301,8 @@ async function getSubsidiaries() {
         for (const sub of defaultSubsidiaries) {
           try {
             await query(
-              `INSERT INTO Subsidiary (id, name, path, description, imageUrl, displayOrder, createdAt, updatedAt)
-               VALUES (:id, :name, :path, :description, :imageUrl, :displayOrder, NOW(3), NOW(3))`,
+              `INSERT INTO "Subsidiary" (id, name, path, description, "imageUrl", "displayOrder", "createdAt", "updatedAt")
+               VALUES (:id, :name, :path, :description, :imageUrl, :displayOrder, NOW(), NOW())`,
               {
                 id: sub.id,
                 name: sub.name,
@@ -314,7 +314,7 @@ async function getSubsidiaries() {
             );
           } catch (error: any) {
             // Ignore duplicate key errors
-            if (error.code !== "ER_DUP_ENTRY") {
+            if (error.code !== "23505") {
               console.error(`Error auto-seeding ${sub.name}:`, error);
             }
           }
@@ -336,7 +336,7 @@ async function getSubsidiaries() {
         displayOrder: number;
       }[]
     >(
-      "SELECT id, name, path, description, imageUrl, displayOrder FROM Subsidiary ORDER BY displayOrder ASC, name ASC",
+      'SELECT id, name, path, description, "imageUrl", "displayOrder" FROM "Subsidiary" ORDER BY "displayOrder" ASC, name ASC',
     );
 
     const rowsArray = Array.isArray(rows) ? rows : [];
@@ -391,7 +391,7 @@ async function getSubsidiaries() {
 async function getCounts() {
   try {
     const rows = await query<{ projects: number; clients: number }[]>(
-      `SELECT (SELECT COUNT(*) FROM Project) AS projects, (SELECT COUNT(*) FROM Client) AS clients`,
+      'SELECT (SELECT COUNT(*) FROM "Project") AS projects, (SELECT COUNT(*) FROM "Client") AS clients',
     );
     const r =
       Array.isArray(rows) && rows[0] ? rows[0] : { projects: 0, clients: 0 };

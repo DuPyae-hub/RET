@@ -7,7 +7,7 @@ export async function GET(
 ) {
   try {
     const rows = await query(
-      'SELECT id, title, description, category, imageUrl, subsidiary, status, createdAt, updatedAt FROM Project WHERE id = :id LIMIT 1',
+      'SELECT id, title, description, category, "imageUrl", subsidiary, status, "createdAt", "updatedAt" FROM "Project" WHERE id = :id LIMIT 1',
       { id: params.id }
     )
     const project = (rows as any[])[0]
@@ -39,14 +39,14 @@ export async function PUT(
     const statusValue = status || 'unknown'
 
     await query(
-      `UPDATE Project
+      `UPDATE "Project"
        SET title = :title,
            description = :description,
            category = :category,
-           imageUrl = :imageUrl,
+           "imageUrl" = :imageUrl,
            subsidiary = :subsidiary,
            status = :status,
-           updatedAt = NOW(3)
+           "updatedAt" = NOW()
        WHERE id = :id`,
       {
         id: params.id,
@@ -60,7 +60,7 @@ export async function PUT(
     )
 
     const rows = await query(
-      'SELECT id, title, description, category, imageUrl, subsidiary, status, createdAt, updatedAt FROM Project WHERE id = :id LIMIT 1',
+      'SELECT id, title, description, category, "imageUrl", subsidiary, status, "createdAt", "updatedAt" FROM "Project" WHERE id = :id LIMIT 1',
       { id: params.id }
     )
     const updated = (rows as any[])[0]
@@ -78,7 +78,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    await query('DELETE FROM Project WHERE id = :id', { id: params.id })
+    await query('DELETE FROM "Project" WHERE id = :id', { id: params.id })
 
     return NextResponse.json({ message: 'Project deleted successfully' })
   } catch (error) {

@@ -27,7 +27,7 @@ export async function POST() {
   try {
     // Check if documents already exist
     const existing = await query<any[]>(
-      'SELECT COUNT(*) as count FROM LegalDocument'
+      'SELECT COUNT(*) as count FROM "LegalDocument"'
     )
 
     if (existing[0]?.count > 0) {
@@ -42,7 +42,7 @@ export async function POST() {
     for (const doc of defaultLegalDocuments) {
       const id = randomBytes(16).toString('hex')
       await query(
-        'INSERT INTO LegalDocument (id, title, description, documentUrl, type, createdAt, updatedAt) VALUES (:id, :title, :description, :documentUrl, :type, NOW(), NOW())',
+        'INSERT INTO "LegalDocument" (id, title, description, "documentUrl", type, "createdAt", "updatedAt") VALUES (:id, :title, :description, :documentUrl, :type, NOW(), NOW())',
         {
           id,
           title: doc.title,

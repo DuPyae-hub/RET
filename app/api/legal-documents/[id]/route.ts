@@ -7,7 +7,7 @@ export async function GET(
 ) {
   try {
     const documents = await query<any[]>(
-      'SELECT id, title, description, documentUrl, type, createdAt, updatedAt FROM LegalDocument WHERE id = :id',
+      'SELECT id, title, description, "documentUrl", type, "createdAt", "updatedAt" FROM "LegalDocument" WHERE id = :id',
       { id: params.id }
     )
 
@@ -33,7 +33,7 @@ export async function PUT(
     const { title, description, documentUrl, type } = body
 
     await query(
-      'UPDATE LegalDocument SET title = :title, description = :description, documentUrl = :documentUrl, type = :type, updatedAt = NOW() WHERE id = :id',
+      'UPDATE "LegalDocument" SET title = :title, description = :description, "documentUrl" = :documentUrl, type = :type, "updatedAt" = NOW() WHERE id = :id',
       {
         id: params.id,
         title,
@@ -44,7 +44,7 @@ export async function PUT(
     )
 
     const updated = await query<any[]>(
-      'SELECT id, title, description, documentUrl, type, createdAt, updatedAt FROM LegalDocument WHERE id = :id',
+      'SELECT id, title, description, "documentUrl", type, "createdAt", "updatedAt" FROM "LegalDocument" WHERE id = :id',
       { id: params.id }
     )
 
@@ -62,7 +62,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    await query('DELETE FROM LegalDocument WHERE id = :id', { id: params.id })
+    await query('DELETE FROM "LegalDocument" WHERE id = :id', { id: params.id })
 
     return NextResponse.json({ message: 'Legal document deleted successfully' })
   } catch (error) {

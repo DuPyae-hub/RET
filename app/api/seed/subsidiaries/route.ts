@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       try {
         // Check if subsidiary already exists
         const existing = await query(
-          'SELECT id FROM Subsidiary WHERE id = :id OR name = :name OR path = :path LIMIT 1',
+          'SELECT id FROM "Subsidiary" WHERE id = :id OR name = :name OR path = :path LIMIT 1',
           { id: sub.id, name: sub.name, path: sub.path }
         )
 
@@ -54,13 +54,13 @@ export async function POST(request: NextRequest) {
         if (existingArray.length > 0) {
           // Update existing
           await query(
-            `UPDATE Subsidiary 
-             SET name = :name, 
-                 path = :path, 
-                 description = :description, 
-                 imageUrl = :imageUrl, 
-                 displayOrder = :displayOrder,
-                 updatedAt = NOW(3)
+            `UPDATE "Subsidiary"
+             SET name = :name,
+                 path = :path,
+                 description = :description,
+                 "imageUrl" = :imageUrl,
+                 "displayOrder" = :displayOrder,
+                 "updatedAt" = NOW()
              WHERE id = :id`,
             {
               id: sub.id,
@@ -75,8 +75,8 @@ export async function POST(request: NextRequest) {
         } else {
           // Insert new
           await query(
-            `INSERT INTO Subsidiary (id, name, path, description, imageUrl, displayOrder, createdAt, updatedAt)
-             VALUES (:id, :name, :path, :description, :imageUrl, :displayOrder, NOW(3), NOW(3))`,
+            `INSERT INTO "Subsidiary" (id, name, path, description, "imageUrl", "displayOrder", "createdAt", "updatedAt")
+             VALUES (:id, :name, :path, :description, :imageUrl, :displayOrder, NOW(), NOW())`,
             {
               id: sub.id,
               name: sub.name,

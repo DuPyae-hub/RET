@@ -51,7 +51,7 @@ function getDefaultBanners(pageKey: string): PageBanner[] {
 export async function getPageBanners(pageKey: string): Promise<PageBanner[]> {
   try {
     const rows = await query<any[]>(
-      'SELECT id, pageKey, title, subtitle, imageUrl, sortOrder, isActive, createdAt, updatedAt FROM PageBanner WHERE pageKey = :pageKey AND isActive = 1 ORDER BY sortOrder ASC, createdAt DESC',
+      'SELECT id, "pageKey", title, subtitle, "imageUrl", "sortOrder", "isActive", "createdAt", "updatedAt" FROM "PageBanner" WHERE "pageKey" = :pageKey AND "isActive" = 1 ORDER BY "sortOrder" ASC, "createdAt" DESC',
       { pageKey }
     )
 

@@ -7,7 +7,7 @@ export async function GET() {
     const settingsMap: Record<string, string> = {}
 
     const rows = await query<{ key: string; value: string }[]>(
-      'SELECT `key`, `value` FROM site_settings'
+      'SELECT "key", "value" FROM site_settings'
     )
     
     // Handle mysql2 result format (can be array or RowDataPacket)
@@ -31,31 +31,15 @@ export async function GET() {
 }
 
 async function upsertSetting(key: string, value: string) {
-  // Use INSERT ... ON DUPLICATE KEY UPDATE since there's a UNIQUE key on `key` column
-  // We need to handle the id - if it exists, use it, otherwise generate new one
+  // PostgreSQL: INSERT ... ON CONFLICT ("key") DO UPDATE
   try {
-    // Try to get existing id first
-    const existing = await query<{ id: string }[]>(
-      'SELECT id FROM site_settings WHERE `key` = :key LIMIT 1',
-      { key }
-    )
-    
-    let existingId: string = randomUUID()
-    if (Array.isArray(existing) && existing.length > 0) {
-      const row = existing[0] as { id?: string; ID?: string }
-      existingId = row.id || row.ID || randomUUID()
-    } else if (existing && typeof existing === 'object' && 'id' in existing) {
-      const row = existing as { id?: string; ID?: string }
-      existingId = row.id || row.ID || randomUUID()
-    }
-    
+    const id = randomUUID()
     await query(
-      `INSERT INTO site_settings (id, \`key\`, \`value\`, updatedAt)
-       VALUES (:id, :key, :value, NOW(3))
-       ON DUPLICATE KEY UPDATE \`value\` = VALUES(\`value\`), updatedAt = NOW(3)`,
-      { id: existingId, key, value }
+      `INSERT INTO site_settings (id, "key", "value", "updatedAt")
+       VALUES (:id, :key, :value, NOW())
+       ON CONFLICT ("key") DO UPDATE SET "value" = EXCLUDED."value", "updatedAt" = NOW()`,
+      { id, key, value }
     )
-    
     console.log(`Upserted setting: ${key} = ${value.substring(0, 50)}...`)
   } catch (error) {
     console.error(`Error upserting setting ${key}:`, error)

@@ -22,7 +22,7 @@ export async function GET(
 ) {
   try {
     const rows = await query<any[]>(
-      'SELECT id, pageKey, title, subtitle, imageUrl, sortOrder, isActive, createdAt, updatedAt FROM PageBanner WHERE id = :id LIMIT 1',
+      'SELECT id, "pageKey", title, subtitle, "imageUrl", "sortOrder", "isActive", "createdAt", "updatedAt" FROM "PageBanner" WHERE id = :id LIMIT 1',
       { id: params.id }
     )
     const banner = rowToBanner((rows as any[])[0])
@@ -46,7 +46,7 @@ export async function PUT(
     const { pageKey, title, subtitle, imageUrl, sortOrder, isActive } = body
 
     const existing = await query<any[]>(
-      'SELECT id, pageKey, title, subtitle, imageUrl, sortOrder, isActive FROM PageBanner WHERE id = :id LIMIT 1',
+      'SELECT id, "pageKey", title, subtitle, "imageUrl", "sortOrder", "isActive" FROM "PageBanner" WHERE id = :id LIMIT 1',
       { id: params.id }
     )
     const current = (existing as any[])[0]
@@ -63,14 +63,14 @@ export async function PUT(
     const finalPageKey = pageKey != null && String(pageKey).trim() !== '' ? String(pageKey).trim() : (current.pageKey ?? current.PAGEKEY ?? '')
 
     await query(
-      `UPDATE PageBanner
-       SET pageKey = :pageKey,
+      `UPDATE "PageBanner"
+       SET "pageKey" = :pageKey,
            title = :title,
            subtitle = :subtitle,
-           imageUrl = :imageUrl,
-           sortOrder = :sortOrder,
-           isActive = :isActive,
-           updatedAt = NOW()
+           "imageUrl" = :imageUrl,
+           "sortOrder" = :sortOrder,
+           "isActive" = :isActive,
+           "updatedAt" = NOW()
        WHERE id = :id`,
       {
         id: params.id,
@@ -84,7 +84,7 @@ export async function PUT(
     )
 
     const rows = await query<any[]>(
-      'SELECT id, pageKey, title, subtitle, imageUrl, sortOrder, isActive, createdAt, updatedAt FROM PageBanner WHERE id = :id LIMIT 1',
+      'SELECT id, "pageKey", title, subtitle, "imageUrl", "sortOrder", "isActive", "createdAt", "updatedAt" FROM "PageBanner" WHERE id = :id LIMIT 1',
       { id: params.id }
     )
     const updated = rowToBanner((rows as any[])[0])
@@ -101,7 +101,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    await query('DELETE FROM PageBanner WHERE id = :id', { id: params.id })
+    await query('DELETE FROM "PageBanner" WHERE id = :id', { id: params.id })
     return NextResponse.json({ message: 'Banner deleted successfully' })
   } catch (error) {
     console.error('Error deleting banner:', error)

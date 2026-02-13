@@ -5,7 +5,7 @@ import { randomBytes } from 'crypto'
 export async function GET() {
   try {
     const documents = await query<any[]>(
-      'SELECT id, title, description, documentUrl, type, createdAt, updatedAt FROM LegalDocument ORDER BY createdAt DESC'
+      'SELECT id, title, description, "documentUrl", type, "createdAt", "updatedAt" FROM "LegalDocument" ORDER BY "createdAt" DESC'
     )
     return NextResponse.json(documents)
   } catch (error) {
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     const id = randomBytes(16).toString('hex')
 
     await query(
-      'INSERT INTO LegalDocument (id, title, description, documentUrl, type, createdAt, updatedAt) VALUES (:id, :title, :description, :documentUrl, :type, NOW(), NOW())',
+      'INSERT INTO "LegalDocument" (id, title, description, "documentUrl", type, "createdAt", "updatedAt") VALUES (:id, :title, :description, :documentUrl, :type, NOW(), NOW())',
       {
         id,
         title,
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     )
 
     const newDoc = await query<any[]>(
-      'SELECT id, title, description, documentUrl, type, createdAt, updatedAt FROM LegalDocument WHERE id = :id',
+      'SELECT id, title, description, "documentUrl", type, "createdAt", "updatedAt" FROM "LegalDocument" WHERE id = :id',
       { id }
     )
 

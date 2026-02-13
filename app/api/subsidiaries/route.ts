@@ -41,7 +41,7 @@ async function autoSeedSubsidiaries() {
   try {
     // Check if any subsidiaries exist
     const countResult = await query<{ count: number }[]>(
-      'SELECT COUNT(*) as count FROM Subsidiary'
+      'SELECT COUNT(*) as count FROM "Subsidiary"'
     )
     
     const countArray = Array.isArray(countResult) ? countResult : []
@@ -55,8 +55,8 @@ async function autoSeedSubsidiaries() {
       for (const sub of defaultSubsidiaries) {
         try {
           await query(
-            `INSERT INTO Subsidiary (id, name, path, description, imageUrl, displayOrder, createdAt, updatedAt)
-             VALUES (:id, :name, :path, :description, :imageUrl, :displayOrder, NOW(3), NOW(3))`,
+            `INSERT INTO "Subsidiary" (id, name, path, description, "imageUrl", "displayOrder", "createdAt", "updatedAt")
+             VALUES (:id, :name, :path, :description, :imageUrl, :displayOrder, NOW(), NOW())`,
             {
               id: sub.id,
               name: sub.name,
@@ -68,7 +68,7 @@ async function autoSeedSubsidiaries() {
           )
         } catch (error: any) {
           // Ignore duplicate key errors (in case of race condition)
-          if (error.code !== 'ER_DUP_ENTRY') {
+          if (error.code !== '23505') {
             console.error(`Error seeding ${sub.name}:`, error)
           }
         }
@@ -95,7 +95,7 @@ export async function GET() {
       imageUrl: string | null
       displayOrder: number
     }[]>(
-      'SELECT id, name, path, description, imageUrl, displayOrder FROM Subsidiary ORDER BY displayOrder ASC, name ASC'
+      'SELECT id, name, path, description, "imageUrl", "displayOrder" FROM "Subsidiary" ORDER BY "displayOrder" ASC, name ASC'
     )
 
     const rowsArray = Array.isArray(rows) ? rows : []
@@ -129,8 +129,8 @@ export async function POST(request: NextRequest) {
 
     const id = randomUUID()
     await query(
-      `INSERT INTO Subsidiary (id, name, path, description, imageUrl, displayOrder, createdAt, updatedAt)
-       VALUES (:id, :name, :path, :description, :imageUrl, :displayOrder, NOW(3), NOW(3))`,
+`INSERT INTO "Subsidiary" (id, name, path, description, "imageUrl", "displayOrder", "createdAt", "updatedAt")
+             VALUES (:id, :name, :path, :description, :imageUrl, :displayOrder, NOW(), NOW())`,
       {
         id,
         name,
@@ -144,7 +144,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ id, message: 'Subsidiary created successfully' }, { status: 201 })
   } catch (error: any) {
     console.error('Error creating subsidiary:', error)
-    if (error.code === 'ER_DUP_ENTRY') {
+    if (error.code === '23505') {
       return NextResponse.json({ error: 'Subsidiary with this name or path already exists' }, { status: 400 })
     }
     const message =

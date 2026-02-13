@@ -5,7 +5,7 @@ import { randomUUID } from 'crypto'
 export async function GET() {
   try {
     const projects = await query(
-      'SELECT id, title, description, category, imageUrl, subsidiary, status, createdAt, updatedAt FROM Project ORDER BY createdAt DESC'
+      'SELECT id, title, description, category, "imageUrl", subsidiary, status, "createdAt", "updatedAt" FROM "Project" ORDER BY "createdAt" DESC'
     )
     return NextResponse.json(projects)
   } catch (error) {
@@ -28,8 +28,8 @@ export async function POST(request: NextRequest) {
 
     const id = randomUUID()
     await query(
-      `INSERT INTO Project (id, title, description, category, imageUrl, subsidiary, status, createdAt, updatedAt)
-       VALUES (:id, :title, :description, :category, :imageUrl, :subsidiary, :status, NOW(3), NOW(3))`,
+      `INSERT INTO "Project" (id, title, description, category, "imageUrl", subsidiary, status, "createdAt", "updatedAt")
+       VALUES (:id, :title, :description, :category, :imageUrl, :subsidiary, :status, NOW(), NOW())`,
       {
         id,
         title,
@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
     )
 
     const created = await query(
-      'SELECT id, title, description, category, imageUrl, subsidiary, status, createdAt, updatedAt FROM Project WHERE id = :id LIMIT 1',
+      'SELECT id, title, description, category, "imageUrl", subsidiary, status, "createdAt", "updatedAt" FROM "Project" WHERE id = :id LIMIT 1',
       { id }
     )
     return NextResponse.json((created as any[])[0] ?? { id }, { status: 201 })

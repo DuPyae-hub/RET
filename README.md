@@ -28,8 +28,8 @@ Professional corporate website for Royal Ever True (RET) Business Group and its 
 - **Next.js 14** (App Router)
 - **TypeScript**
 - **Tailwind CSS**
-- **MySQL / MariaDB** (managed via phpMyAdmin)
-- **mysql2** (direct SQL queries from the app)
+- **PostgreSQL** (Neon or any Postgres; previously MySQL)
+- **pg** (Node.js PostgreSQL client; raw SQL with named-param style)
 - **React Hook Form** (for forms)
 
 ## Getting Started
@@ -37,7 +37,7 @@ Professional corporate website for Royal Ever True (RET) Business Group and its 
 ### Prerequisites
 
 - Node.js 18+ installed
-- MySQL database server running
+- **PostgreSQL** (e.g. [Neon](https://neon.tech) – serverless Postgres) or any Postgres 14+
 - npm or yarn package manager
 
 ### Installation
@@ -50,79 +50,19 @@ npm install
 2. Set up environment variables:
 Create a `.env` file in the root directory:
 ```env
-# Option A (recommended): single connection string (works with MySQL/MariaDB + phpMyAdmin)
-DATABASE_URL="mysql://root@127.0.0.1:3306/RET_Database"
+# Neon or any PostgreSQL connection string
+DATABASE_URL="postgresql://user:password@host/database?sslmode=require"
+```
+For Neon: create a project at [neon.tech](https://neon.tech), copy the connection string, and set `DATABASE_URL`.
 
-# Option B: separate vars (used if DATABASE_URL is not set)
-DB_HOST="127.0.0.1"
-DB_PORT="3306"
-DB_USER="root"
-DB_PASSWORD=""
-DB_NAME="RET_Database"
+3. Create the database tables.
+
+**Option A – Neon / PostgreSQL:** Run the schema in Neon’s SQL Editor (or `psql $DATABASE_URL -f migrations/neon_postgres_schema.sql`):
+
+See `migrations/neon_postgres_schema.sql`. Paste its contents into Neon SQL Editor and run it (or: `psql $DATABASE_URL -f migrations/neon_postgres_schema.sql`).
 ```
 
-3. Create the database tables (run in phpMyAdmin → SQL tab):
-
-```sql
-CREATE DATABASE IF NOT EXISTS `RET_Database`
-  CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE `RET_Database`;
-
-CREATE TABLE IF NOT EXISTS `Project` (
-  `id` VARCHAR(191) NOT NULL,
-  `title` VARCHAR(255) NOT NULL,
-  `description` TEXT NULL,
-  `category` VARCHAR(191) NOT NULL,
-  `imageUrl` VARCHAR(512) NOT NULL,
-  `subsidiary` VARCHAR(191) NULL,
-  `status` VARCHAR(191) DEFAULT 'unknown',
-  `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS `Client` (
-  `id` VARCHAR(191) NOT NULL,
-  `name` VARCHAR(255) NOT NULL,
-  `logoUrl` VARCHAR(512) NOT NULL,
-  `category` VARCHAR(191) NOT NULL,
-  `subsidiary` VARCHAR(191) NULL,
-  `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS `site_settings` (
-  `id` VARCHAR(191) NOT NULL,
-  `key` VARCHAR(191) NOT NULL UNIQUE,
-  `value` MEDIUMTEXT NOT NULL,
-  `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS `LegalDocument` (
-  `id` VARCHAR(191) NOT NULL,
-  `title` VARCHAR(255) NOT NULL,
-  `description` TEXT NULL,
-  `documentUrl` VARCHAR(512) NOT NULL,
-  `type` VARCHAR(191) NOT NULL,
-  `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS `ConstructionProject` (
-  `id` VARCHAR(191) NOT NULL,
-  `title` VARCHAR(255) NOT NULL,
-  `description` TEXT NULL,
-  `imageUrl` VARCHAR(512) NOT NULL,
-  `status` VARCHAR(191) NOT NULL,
-  `location` VARCHAR(255) NULL,
-  `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-  `updatedAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-```
+**Option B – Prisma only:** If you use Prisma to create tables, run `npx prisma db push`. Note: `image_storage` and full schema are in `migrations/neon_postgres_schema.sql`.
 
 4. Run the development server:
 ```bash

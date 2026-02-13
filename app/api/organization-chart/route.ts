@@ -5,7 +5,7 @@ import { randomBytes } from 'crypto'
 export async function GET() {
   try {
     const settings = await query<any[]>(
-      'SELECT `value` FROM site_settings WHERE `key` = "organizationChartUrl" LIMIT 1'
+      'SELECT "value" FROM site_settings WHERE "key" = \'organizationChartUrl\' LIMIT 1'
     )
 
     const url = settings.length > 0 ? settings[0].value : null
@@ -27,20 +27,20 @@ export async function POST(request: NextRequest) {
 
     // Check if setting exists
     const existing = await query<any[]>(
-      'SELECT id FROM site_settings WHERE `key` = "organizationChartUrl" LIMIT 1'
+      'SELECT id FROM site_settings WHERE "key" = \'organizationChartUrl\' LIMIT 1'
     )
 
     if (existing.length > 0) {
       // Update existing
       await query(
-        'UPDATE site_settings SET `value` = :url, updatedAt = NOW() WHERE `key` = "organizationChartUrl"',
+        'UPDATE site_settings SET "value" = :url, "updatedAt" = NOW() WHERE "key" = \'organizationChartUrl\'',
         { url }
       )
     } else {
       // Insert new
       const id = randomBytes(16).toString('hex')
       await query(
-        'INSERT INTO site_settings (id, `key`, `value`, updatedAt) VALUES (:id, "organizationChartUrl", :url, NOW())',
+        'INSERT INTO site_settings (id, "key", "value", "updatedAt") VALUES (:id, \'organizationChartUrl\', :url, NOW())',
         { id, url }
       )
     }

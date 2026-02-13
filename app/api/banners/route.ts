@@ -22,10 +22,10 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const pageKey = searchParams.get('pageKey')
 
-    let sql = 'SELECT id, pageKey, title, subtitle, imageUrl, sortOrder, isActive, createdAt, updatedAt FROM PageBanner'
+    let sql = 'SELECT id, "pageKey", title, subtitle, "imageUrl", "sortOrder", "isActive", "createdAt", "updatedAt" FROM "PageBanner"'
     const params: Record<string, any> = {}
     if (pageKey) {
-      sql += ' WHERE pageKey = :pageKey'
+      sql += ' WHERE "pageKey" = :pageKey'
       params.pageKey = pageKey
     }
     sql += ' ORDER BY pageKey ASC, sortOrder ASC, createdAt ASC'
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
 
     const id = randomUUID()
     await query(
-      `INSERT INTO PageBanner (id, pageKey, title, subtitle, imageUrl, sortOrder, isActive, createdAt, updatedAt)
+      `INSERT INTO "PageBanner" (id, "pageKey", title, subtitle, "imageUrl", "sortOrder", "isActive", "createdAt", "updatedAt")
        VALUES (:id, :pageKey, :title, :subtitle, :imageUrl, :sortOrder, :isActive, NOW(), NOW())`,
       {
         id,
@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     )
 
     const rows = await query<any[]>(
-      'SELECT id, pageKey, title, subtitle, imageUrl, sortOrder, isActive, createdAt, updatedAt FROM PageBanner WHERE id = :id LIMIT 1',
+      'SELECT id, "pageKey", title, subtitle, "imageUrl", "sortOrder", "isActive", "createdAt", "updatedAt" FROM "PageBanner" WHERE id = :id LIMIT 1',
       { id }
     )
     const created = rowToBanner((rows as any[])[0])

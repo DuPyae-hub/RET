@@ -7,11 +7,11 @@ export async function GET(request: NextRequest) {
     const status = request.nextUrl.searchParams.get('status')
     const projects = status
       ? await query(
-          'SELECT id, title, description, imageUrl, status, location, createdAt, updatedAt FROM ConstructionProject WHERE status = :status ORDER BY createdAt DESC',
+          'SELECT id, title, description, "imageUrl", status, location, "createdAt", "updatedAt" FROM "ConstructionProject" WHERE status = :status ORDER BY "createdAt" DESC',
           { status }
         )
       : await query(
-          'SELECT id, title, description, imageUrl, status, location, createdAt, updatedAt FROM ConstructionProject ORDER BY createdAt DESC'
+          'SELECT id, title, description, "imageUrl", status, location, "createdAt", "updatedAt" FROM "ConstructionProject" ORDER BY "createdAt" DESC'
         )
     return NextResponse.json(projects)
   } catch (error) {
@@ -27,8 +27,8 @@ export async function POST(request: NextRequest) {
 
     const id = randomUUID()
     await query(
-      `INSERT INTO ConstructionProject (id, title, description, imageUrl, status, location, createdAt, updatedAt)
-       VALUES (:id, :title, :description, :imageUrl, :status, :location, NOW(3), NOW(3))`,
+      `INSERT INTO "ConstructionProject" (id, title, description, "imageUrl", status, location, "createdAt", "updatedAt")
+       VALUES (:id, :title, :description, :imageUrl, :status, :location, NOW(), NOW())`,
       {
         id,
         title,
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     )
 
     const created = await query(
-      'SELECT id, title, description, imageUrl, status, location, createdAt, updatedAt FROM ConstructionProject WHERE id = :id LIMIT 1',
+      'SELECT id, title, description, "imageUrl", status, location, "createdAt", "updatedAt" FROM "ConstructionProject" WHERE id = :id LIMIT 1',
       { id }
     )
     return NextResponse.json((created as any[])[0] ?? { id }, { status: 201 })

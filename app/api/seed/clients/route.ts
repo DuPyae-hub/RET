@@ -93,15 +93,15 @@ export async function POST(request: NextRequest) {
       try {
         // Check if client already exists
         const existing = await query(
-          'SELECT id FROM Client WHERE name = :name LIMIT 1',
+          'SELECT id FROM "Client" WHERE name = :name LIMIT 1',
           { name: client.name }
         )
 
         if (existing.length === 0) {
           const id = randomUUID()
           await query(
-            `INSERT INTO Client (id, name, logoUrl, category, subsidiary, createdAt, updatedAt)
-             VALUES (:id, :name, :logoUrl, :category, NULL, NOW(3), NOW(3))`,
+            `INSERT INTO "Client" (id, name, "logoUrl", category, subsidiary, "createdAt", "updatedAt")
+             VALUES (:id, :name, :logoUrl, :category, NULL, NOW(), NOW())`,
             {
               id,
               name: client.name,

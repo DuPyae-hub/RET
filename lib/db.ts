@@ -1,50 +1,54 @@
-import mysql, { Pool } from 'mysql2/promise'
+import { Pool } from 'pg'
 
-function parseDatabaseUrl(databaseUrl: string) {
-  // Supports: mysql://user:pass@host:port/dbname
-  const url = new URL(databaseUrl)
-  const user = decodeURIComponent(url.username)
-  const password = decodeURIComponent(url.password)
-  const host = url.hostname
-  const port = url.port ? Number(url.port) : 3306
-  const database = url.pathname.replace(/^\//, '')
-  return { host, port, user, password, database }
+/**
+ * Convert MySQL-style named placeholders (:name) to PostgreSQL positional ($1, $2)
+ * and return [sql, values[]] for pool.query(sql, values).
+ */
+function toPostgresParams(sql: string, params?: Record<string, any> | any[]): [string, any[]] {
+  if (params == null || (Array.isArray(params) && params.length === 0)) {
+    return [sql, []]
+  }
+  if (Array.isArray(params)) {
+    const values = params
+    let i = 0
+    const newSql = sql.replace(/\?/g, () => `$${++i}`)
+    return [newSql, values]
+  }
+  const record = params as Record<string, any>
+  const keysInOrder: string[] = []
+  const newSql = sql.replace(/:(\w+)/g, (_, key) => {
+    const idx = keysInOrder.indexOf(key)
+    if (idx === -1) keysInOrder.push(key)
+    return `$${keysInOrder.indexOf(key) + 1}`
+  })
+  const values = keysInOrder.map((k) => record[k])
+  return [newSql, values]
 }
 
 let pool: Pool | null = null
 
-export function getPool() {
+export function getPool(): Pool {
   if (pool) return pool
 
   const databaseUrl = process.env.DATABASE_URL
+  if (!databaseUrl) {
+    throw new Error('DATABASE_URL is required for Neon/PostgreSQL')
+  }
 
-  const config = databaseUrl
-    ? parseDatabaseUrl(databaseUrl)
-    : {
-        host: process.env.DB_HOST || '127.0.0.1',
-        port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306,
-        user: process.env.DB_USER || 'root',
-        password: process.env.DB_PASSWORD || '',
-        database: process.env.DB_NAME || 'RET_Database',
-      }
-
-  pool = mysql.createPool({
-    host: config.host,
-    port: config.port,
-    user: config.user,
-    password: config.password,
-    database: config.database,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0,
-    namedPlaceholders: true,
+  pool = new Pool({
+    connectionString: databaseUrl,
+    ssl: databaseUrl.includes('neon.tech') ? { rejectUnauthorized: false } : undefined,
+    max: 10,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 10000,
   })
 
   return pool
 }
 
-export async function query<T = any>(sql: string, params?: Record<string, any> | any[]) {
-  const [rows] = await getPool().query(sql, params as any)
-  return rows as T
+export async function query<T = any>(sql: string, params?: Record<string, any> | any[]): Promise<T> {
+  const [pgSql, values] = toPostgresParams(sql, params)
+  const client = getPool()
+  const result = await client.query(pgSql, values)
+  return result.rows as T
 }
-

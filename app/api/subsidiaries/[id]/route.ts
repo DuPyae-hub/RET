@@ -14,7 +14,7 @@ export async function GET(
       imageUrl: string | null
       displayOrder: number
     }[]>(
-      'SELECT id, name, path, description, imageUrl, displayOrder FROM Subsidiary WHERE id = :id LIMIT 1',
+      'SELECT id, name, path, description, "imageUrl", "displayOrder" FROM "Subsidiary" WHERE id = :id LIMIT 1',
       { id: params.id }
     )
 
@@ -55,13 +55,13 @@ export async function PUT(
     }
 
     await query(
-      `UPDATE Subsidiary
+      `UPDATE "Subsidiary"
        SET name = :name,
            path = :path,
            description = :description,
-           imageUrl = :imageUrl,
-           displayOrder = :displayOrder,
-           updatedAt = NOW(3)
+           "imageUrl" = :imageUrl,
+           "displayOrder" = :displayOrder,
+           "updatedAt" = NOW()
        WHERE id = :id`,
       {
         id: params.id,
@@ -76,7 +76,7 @@ export async function PUT(
     return NextResponse.json({ message: 'Subsidiary updated successfully' })
   } catch (error: any) {
     console.error('Error updating subsidiary:', error)
-    if (error.code === 'ER_DUP_ENTRY') {
+    if (error.code === '23505') {
       return NextResponse.json({ error: 'Subsidiary with this name or path already exists' }, { status: 400 })
     }
     const message =
@@ -90,7 +90,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    await query('DELETE FROM Subsidiary WHERE id = :id', { id: params.id })
+    await query('DELETE FROM "Subsidiary" WHERE id = :id', { id: params.id })
 
     return NextResponse.json({ message: 'Subsidiary deleted successfully' })
   } catch (error) {
