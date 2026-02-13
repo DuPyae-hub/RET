@@ -218,7 +218,7 @@ async function getOrganizationChartUrl() {
     );
     const raw = settings.length > 0 ? settings[0].value : null;
     const normalize = (v: string | null) => {
-      if (!v) return "/org/team-photo.png";
+      if (!v) return "/org/organization-chart.png";
       let s = String(v);
       s = s.replace(/^file:\/+/, "");
       s = s.replace(/^.*\/public\//, "/");
@@ -237,7 +237,7 @@ async function getOrganizationChartUrl() {
     );
     return normalized;
   } catch (error) {
-    return "/org/team-photo.png";
+    return "/org/organization-chart.png";
   }
 }
 
@@ -719,7 +719,7 @@ export default async function HomePage() {
                   priority
                 />
               </div>
-              {(orgChartUrl === "/org/organization-chart.png" || orgChartUrl === "/org/team-photo.png") && (
+              {orgChartUrl === "/org/organization-chart.png" && (
                 <div className="px-6 py-4 bg-[#F8F9FA] text-xs text-gray-500">
                   Upload an organization chart in{" "}
                   <Link
