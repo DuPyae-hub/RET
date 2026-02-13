@@ -1,6 +1,7 @@
 import { query } from "@/lib/db";
 import SubsidiaryLayout from "@/components/SubsidiaryLayout";
 import { Leaf, Settings, BookOpen, ShoppingCart } from "lucide-react";
+import { getPageBanners } from "@/lib/banners";
 
 async function getProjects() {
   try {
@@ -14,7 +15,20 @@ async function getProjects() {
 }
 
 export default async function AgriculturalFriendsPage() {
-  const projects = await getProjects();
+  const [projects, bannerRows] = await Promise.all([
+    getProjects(),
+    getPageBanners("agricultural-friends"),
+  ]);
+
+  const banners =
+    bannerRows.length > 0
+      ? bannerRows.map((b) => ({
+          id: b.id,
+          title: b.title,
+          subtitle: b.subtitle,
+          imageUrl: b.imageUrl,
+        }))
+      : [];
 
   return (
     <SubsidiaryLayout
@@ -25,6 +39,7 @@ export default async function AgriculturalFriendsPage() {
       ]}
       heroTitle="Agricultural Friends"
       heroDescription="Supporting Myanmar's agricultural sector with comprehensive services and solutions."
+      banners={banners}
       aboutTitle="About Agricultural Friends"
       aboutContent={
         <>

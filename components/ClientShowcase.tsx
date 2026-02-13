@@ -148,14 +148,16 @@ export default function ClientShowcase() {
   );
 
   return (
-    <section className="py-16 md:py-20 bg-white overflow-x-hidden">
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
-        <h2 className="text-3xl md:text-4xl font-semibold text-center text-[#0F2942] mb-3">
-          Client Showcase
-        </h2>
-        <p className="text-center text-gray-600 mb-10 md:mb-12">
-          Trusted by leading brands across Myanmar
-        </p>
+    <section className="py-section md:py-20 bg-white overflow-x-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-10 md:mb-12">
+          <p className="section-label text-[#1A4A94] mb-2">Our partners</p>
+          <h2 className="font-serif text-ox-h2 md:text-3xl font-semibold text-[#0F2942]">
+            Client Showcase
+          </h2>
+          <p className="text-gray-600 mt-2">Trusted by leading brands across Myanmar</p>
+          <div className="section-title-bar mt-3" />
+        </div>
 
         <div className="flex flex-wrap justify-center gap-3 mb-10 md:mb-12">
           {filterCategories.map((category) => (

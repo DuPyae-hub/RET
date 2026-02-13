@@ -14,6 +14,8 @@ import {
 import ClientShowcase from "@/components/ClientShowcase";
 import ScrollAnimation from "@/components/ScrollAnimation";
 import StatsCards from "@/components/StatsCards";
+import BannerCarousel from "@/components/BannerCarousel";
+import { getPageBanners } from "@/lib/banners";
 
 // Force dynamic rendering to ensure settings updates are reflected immediately
 export const dynamic = "force-dynamic";
@@ -216,7 +218,7 @@ async function getOrganizationChartUrl() {
     );
     const raw = settings.length > 0 ? settings[0].value : null;
     const normalize = (v: string | null) => {
-      if (!v) return "/org/organization-chart.png";
+      if (!v) return "/org/team-photo.png";
       let s = String(v);
       s = s.replace(/^file:\/+/, "");
       s = s.replace(/^.*\/public\//, "/");
@@ -235,7 +237,7 @@ async function getOrganizationChartUrl() {
     );
     return normalized;
   } catch (error) {
-    return "/org/organization-chart.png";
+    return "/org/team-photo.png";
   }
 }
 
@@ -404,11 +406,15 @@ async function getCounts() {
 }
 
 export default async function HomePage() {
-  const settings = await getSiteSettings();
-  const documents = await getLegalDocuments();
-  const orgChartUrl = await getOrganizationChartUrl();
-  const subsidiaries = await getSubsidiaries();
-  const counts = await getCounts();
+  const [settings, documents, orgChartUrl, subsidiaries, counts, homeBanners] =
+    await Promise.all([
+      getSiteSettings(),
+      getLegalDocuments(),
+      getOrganizationChartUrl(),
+      getSubsidiaries(),
+      getCounts(),
+      getPageBanners("home"),
+    ]);
 
   const placeholderImage =
     "https://via.placeholder.com/800x600?text=Document+Preview";
@@ -437,46 +443,35 @@ export default async function HomePage() {
     <div>
       <Breadcrumbs items={[{ label: "Home", href: "/" }]} />
 
-      {/* Hero Section - Royal Blue with subtle geometric pattern */}
-      <section className="bg-[#1A4A94] text-white py-24 md:py-32 relative overflow-hidden">
-        <div
-          className="absolute inset-0 hero-pattern opacity-100"
-          aria-hidden
+      {/* Hero - image carousel (default images if none in DB); no blue block on top */}
+      <section className="text-white relative overflow-hidden">
+        <BannerCarousel
+          banners={homeBanners.map((b) => ({
+            id: b.id,
+            title: b.title,
+            subtitle: b.subtitle,
+            imageUrl: b.imageUrl,
+          }))}
+          defaultTitle="Royal Ever Truth Business Group"
+          defaultSubtitle="Established since 2007, providing professional overall Advertising & Media Services across the whole Myanmar territory."
+          accentColor="#FFC107"
         />
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 relative z-10">
-          <ScrollAnimation direction="fade" delay={100}>
-            <span className="inline-block text-white/80 text-sm font-semibold uppercase tracking-wider mb-4">
-              Since 2007
-            </span>
-          </ScrollAnimation>
-          <ScrollAnimation direction="up" delay={200}>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight text-yellow-400">
-              Royal Ever Truth
-              <br />
-              Business Group
-            </h1>
-          </ScrollAnimation>
-          <ScrollAnimation direction="up" delay={300}>
-            <p className="text-xl md:text-2xl text-white/90 max-w-3xl leading-relaxed">
-              Established since 2007, providing professional overall Advertising
-              & Media Services across the whole Myanmar territory.
-            </p>
-          </ScrollAnimation>
-        </div>
       </section>
 
-      {/* Stats Cards */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 mt-12 mb-12 relative z-10">
+      {/* Stats - Oxford-style: compact strip below hero */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-2 relative z-10">
         <StatsCards counts={counts} />
       </div>
 
-      {/* Attitude & Core Values */}
-      <section className="py-16 md:py-20 bg-[#1A4A94] relative overflow-hidden">
-        <div
-          className="absolute inset-0 hero-pattern opacity-100"
-          aria-hidden
-        />
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 relative z-10">
+      {/* Attitude & Core Values - Oxford-style section */}
+      <section className="py-section md:py-20 bg-[#1A4A94] relative overflow-hidden">
+        <div className="absolute inset-0 hero-pattern opacity-100" aria-hidden />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="mb-10 md:mb-12">
+            <p className="section-label text-white/80 mb-2">Our approach</p>
+            <h2 className="font-serif text-ox-h2 md:text-3xl font-semibold text-white">Mission, vision & values</h2>
+            <div className="section-title-bar mt-2" />
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             <ScrollAnimation direction="up" delay={250}>
               <div className="card-ret bg-white p-6 md:p-8 border border-[#E9ECEF] hover-lift">
@@ -544,15 +539,16 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* History */}
-      <section className="py-16 md:py-20 bg-white">
-        <div className="max-w-4xl mx-auto px-3 sm:px-4 lg:px-6">
+      {/* History - Oxford-style section */}
+      <section className="py-section md:py-20 bg-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollAnimation direction="up" delay={100}>
-            <div className="text-center mb-8 md:mb-12">
-              <h2 className="text-3xl md:text-4xl font-semibold text-[#0F2942] mb-3">
+            <div className="mb-8 md:mb-12">
+              <p className="section-label text-[#1A4A94] mb-2">About us</p>
+              <h2 className="font-serif text-ox-h2 md:text-3xl font-semibold text-[#0F2942]">
                 Our History
               </h2>
-              <div className="w-16 h-1 bg-[#FFC107] mx-auto rounded-full" />
+              <div className="section-title-bar" />
             </div>
           </ScrollAnimation>
           <ScrollAnimation direction="up" delay={200}>
@@ -565,18 +561,19 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Our Strong Points */}
-      <section className="py-16 md:py-20 bg-[#F8F9FA]">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
+      {/* Our Strong Points - Oxford-style section */}
+      <section className="py-section md:py-20 bg-[#F8F9FA]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollAnimation direction="up" delay={100}>
-            <div className="text-center mb-10 md:mb-12">
-              <h2 className="text-3xl md:text-4xl font-semibold text-[#0F2942] mb-3">
+            <div className="mb-10 md:mb-12">
+              <p className="section-label text-[#1A4A94] mb-2">Why choose us</p>
+              <h2 className="font-serif text-ox-h2 md:text-3xl font-semibold text-[#0F2942]">
                 Our Strong Points
               </h2>
-              <p className="text-gray-600 max-w-2xl mx-auto text-base">
-                Key strengths that drive our success and commitment to
-                excellence
+              <p className="text-gray-600 max-w-2xl mt-2 text-base">
+                Key strengths that drive our success and commitment to excellence
               </p>
+              <div className="section-title-bar mt-3" />
             </div>
           </ScrollAnimation>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
@@ -641,17 +638,19 @@ export default async function HomePage() {
       {/* Client Showcase - Filterable Gallery */}
       <ClientShowcase />
 
-      {/* Subsidiaries */}
-      <section className="py-16 md:py-20 bg-white">
-        <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-6">
+      {/* Subsidiaries - Oxford-style Discover/Explore block */}
+      <section className="py-section md:py-20 bg-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollAnimation direction="up" delay={100}>
-            <div className="text-center mb-10 md:mb-12">
-              <h2 className="text-3xl md:text-4xl font-semibold text-[#0F2942] mb-3">
+            <div className="mb-10 md:mb-12">
+              <p className="section-label text-[#1A4A94] mb-2">Discover</p>
+              <h2 className="font-serif text-ox-h2 md:text-3xl font-semibold text-[#0F2942]">
                 Our Subsidiaries
               </h2>
-              <p className="text-gray-600 max-w-xl mx-auto text-base">
+              <p className="text-gray-600 max-w-xl mt-2 text-base">
                 Explore our diverse portfolio of specialized business units
               </p>
+              <div className="section-title-bar mt-3" />
             </div>
           </ScrollAnimation>
           <div className="grid md:grid-cols-2 gap-6">
@@ -693,15 +692,19 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Organizational Structure */}
-      <section className="py-16 md:py-20 bg-[#F8F9FA]">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
+      {/* Organizational Structure - Oxford-style section */}
+      <section className="py-section md:py-20 bg-[#F8F9FA]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollAnimation direction="up" delay={100}>
+            <div className="mb-8 md:mb-10">
+              <p className="section-label text-[#1A4A94] mb-2">Structure</p>
+              <h2 className="font-serif text-ox-h2 md:text-3xl font-semibold text-[#0F2942]">
+                Organizational Structure
+              </h2>
+              <div className="section-title-bar mt-2" />
+            </div>
             <div className="card-ret overflow-hidden">
               <div className="p-6 md:p-8 border-b border-[#E9ECEF]">
-                <h2 className="text-2xl md:text-3xl font-semibold text-center text-[#0F2942] mb-2">
-                  Organizational Structure
-                </h2>
                 <p className="text-gray-600 text-sm text-center">
                   Visual overview of leadership, functional managers, and teams.
                 </p>
@@ -716,7 +719,7 @@ export default async function HomePage() {
                   priority
                 />
               </div>
-              {orgChartUrl === "/org/organization-chart.png" && (
+              {(orgChartUrl === "/org/organization-chart.png" || orgChartUrl === "/org/team-photo.png") && (
                 <div className="px-6 py-4 bg-[#F8F9FA] text-xs text-gray-500">
                   Upload an organization chart in{" "}
                   <Link
@@ -733,15 +736,16 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Legal Documents */}
-      <section className="py-16 md:py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
+      {/* Legal Documents - Oxford-style section */}
+      <section className="py-section md:py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ScrollAnimation direction="up" delay={100}>
-            <div className="text-center mb-10 md:mb-12">
-              <h2 className="text-3xl md:text-4xl font-semibold text-[#0F2942] mb-3">
+            <div className="mb-10 md:mb-12">
+              <p className="section-label text-[#1A4A94] mb-2">Compliance</p>
+              <h2 className="font-serif text-ox-h2 md:text-3xl font-semibold text-[#0F2942]">
                 Legal Documents
               </h2>
-              <div className="w-16 h-1 bg-[#FFC107] mx-auto rounded-full" />
+              <div className="section-title-bar mt-2" />
             </div>
           </ScrollAnimation>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">

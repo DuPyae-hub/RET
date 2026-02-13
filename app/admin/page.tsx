@@ -4,33 +4,81 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+const ADMIN_SECTIONS = [
+  {
+    title: "Content",
+    description: "Manage what appears on your site",
+    cards: [
+      {
+        href: "/admin/projects",
+        label: "Projects",
+        description: "Portfolio and case studies",
+        icon: "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z",
+        countKey: "projects",
+      },
+      {
+        href: "/admin/clients",
+        label: "Clients",
+        description: "Client logos and categories",
+        icon: "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z",
+        countKey: "clients",
+      },
+      {
+        href: "/admin/banners",
+        label: "Banners",
+        description: "Hero carousel images per page",
+        icon: "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14",
+        countKey: null,
+      },
+      {
+        href: "/admin/legal-documents",
+        label: "Legal documents",
+        description: "Certificates and licenses",
+        icon: "M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z",
+        countKey: null,
+      },
+    ],
+  },
+  {
+    title: "Site",
+    description: "Settings and structure",
+    cards: [
+      {
+        href: "/admin/settings",
+        label: "Site settings",
+        description: "Mission, vision, address, org chart",
+        icon: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z",
+        countKey: null,
+      },
+      {
+        href: "/admin/subsidiaries",
+        label: "Subsidiaries",
+        description: "Business units and display order",
+        icon: "M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m3-13h2m-2 0v10m-2 0v-4m0-4h.01",
+        countKey: null,
+      },
+    ],
+  },
+];
+
 export default function AdminPage() {
-  const [projectCount, setProjectCount] = useState<number | null>(null);
-  const [clientCount, setClientCount] = useState<number | null>(null);
+  const [counts, setCounts] = useState<{ projects: number; clients: number }>({ projects: 0, clients: 0 });
 
   useEffect(() => {
-    async function loadCounts() {
+    async function load() {
       try {
-        const [projectsRes, clientsRes] = await Promise.all([
-          fetch("/api/projects"),
-          fetch("/api/clients"),
-        ]);
-
-        if (projectsRes.ok) {
-          const projects = await projectsRes.json();
-          setProjectCount(Array.isArray(projects) ? projects.length : 0);
-        } else setProjectCount(0);
-
-        if (clientsRes.ok) {
-          const clients = await clientsRes.json();
-          setClientCount(Array.isArray(clients) ? clients.length : 0);
-        } else setClientCount(0);
-      } catch (err) {
-        setProjectCount(0);
-        setClientCount(0);
+        const [pRes, cRes] = await Promise.all([fetch("/api/projects"), fetch("/api/clients")]);
+        const projects = pRes.ok ? await pRes.json() : [];
+        const clients = cRes.ok ? await cRes.json() : [];
+        setCounts({
+          projects: Array.isArray(projects) ? projects.length : 0,
+          clients: Array.isArray(clients) ? clients.length : 0,
+        });
+      } catch {
+        setCounts({ projects: 0, clients: 0 });
       }
     }
-    loadCounts();
+    load();
   }, []);
 
   return (
@@ -42,217 +90,59 @@ export default function AdminPage() {
         ]}
       />
 
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-8 md:py-12">
-        <h1 className="text-3xl md:text-4xl font-semibold text-[#0F2942] mb-6">
-          Admin Dashboard
-        </h1>
-
-        <div className="grid md:grid-cols-4 gap-6 mb-6">
-          <Link
-            href="/admin/projects"
-            className="card-ret p-6 hover-lift group flex flex-col"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#1A4A94]/10">
-                <svg
-                  className="w-6 h-6 text-[#1A4A94]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16"
-                  />
-                </svg>
-              </div>
-              <div className="text-sm text-slate-500">Projects</div>
-            </div>
-            <div className="mt-auto">
-              <div className="text-2xl font-bold text-[#0F2942]">
-                {projectCount ?? "—"}
-              </div>
-              <div className="text-sm text-gray-500">
-                Total projects across subsidiaries
-              </div>
-            </div>
-          </Link>
-
-          <Link
-            href="/admin/clients"
-            className="card-ret p-6 hover-lift group flex flex-col"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#1A4A94]/10">
-                <svg
-                  className="w-6 h-6 text-[#1A4A94]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 20h5v-2a3 3 0 00-5.356-1.857"
-                  />
-                </svg>
-              </div>
-              <div className="text-sm text-slate-500">Clients</div>
-            </div>
-            <div className="mt-auto">
-              <div className="text-2xl font-bold text-[#0F2942]">
-                {clientCount ?? "—"}
-              </div>
-              <div className="text-sm text-gray-500">
-                Total registered clients
-              </div>
-            </div>
-          </Link>
-
-          <Link
-            href="/admin/settings"
-            className="card-ret p-6 hover-lift group"
-          >
-            <div className="w-12 h-12 rounded-full flex items-center justify-center mb-2 bg-[#1A4A94]/10">
-              <svg
-                className="w-6 h-6 text-[#1A4A94]"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0"
-                />
-              </svg>
-            </div>
-            <h3 className="text-lg font-semibold mb-1 text-[#0F2942]">
-              Site Settings
-            </h3>
-            <p className="text-gray-600 text-sm">
-              Mission, Vision, Office Address, organization chart.
-            </p>
-          </Link>
-
-          <Link
-            href="/admin/subsidiaries"
-            className="card-ret p-6 hover-lift group"
-          >
-            <div className="w-12 h-12 rounded-full flex items-center justify-center mb-2 bg-[#1A4A94]/10">
-              <svg
-                className="w-6 h-6 text-[#1A4A94]"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 21V5a2 2 0 00-2-2H7"
-                />
-              </svg>
-            </div>
-            <h3 className="text-lg font-semibold mb-1 text-[#0F2942]">
-              Subsidiaries
-            </h3>
-            <p className="text-gray-600 text-sm">
-              Manage subsidiaries, images, descriptions, display order.
-            </p>
-          </Link>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <h1 className="text-2xl font-semibold text-[#0F2942]">Admin</h1>
+          <p className="text-gray-600 text-sm mt-1">Manage content and settings for your site.</p>
         </div>
 
-        {/* existing grid of admin sections */}
-        <div className="grid md:grid-cols-3 gap-6">
-          <Link
-            href="/admin/projects"
-            className="card-ret p-6 hover-lift group"
-          >
-            <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4 bg-[#1A4A94]/10 group-hover:bg-[#1A4A94]/15 transition-colors">
-              <svg
-                className="w-7 h-7 text-[#1A4A94]"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
-            </div>
-            <h2 className="text-lg font-semibold mb-2 text-[#0F2942]">
-              Project Management
+        {ADMIN_SECTIONS.map((section) => (
+          <section key={section.title} className="mb-10">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">
+              {section.title}
             </h2>
-            <p className="text-gray-600 text-sm">
-              Upload and manage portfolio projects for all categories.
-            </p>
-          </Link>
-
-          <Link href="/admin/clients" className="card-ret p-6 hover-lift group">
-            <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4 bg-[#1A4A94]/10 group-hover:bg-[#1A4A94]/15 transition-colors">
-              <svg
-                className="w-7 h-7 text-[#1A4A94]"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                />
-              </svg>
+            <p className="text-gray-600 text-sm mb-4">{section.description}</p>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {section.cards.map((card) => (
+                <Link
+                  key={card.href}
+                  href={card.href}
+                  className="group flex items-start gap-4 rounded-xl border border-[#E9ECEF] bg-white p-5 transition-all hover:border-[#1A4A94]/30 hover:shadow-md"
+                >
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#1A4A94]/10 text-[#1A4A94] group-hover:bg-[#1A4A94]/15 transition-colors">
+                    <svg
+                      className="h-5 w-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={card.icon} />
+                    </svg>
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <span className="block font-medium text-[#0F2942] group-hover:text-[#1A4A94] transition-colors">
+                      {card.label}
+                    </span>
+                    <span className="block text-sm text-gray-500 mt-0.5">{card.description}</span>
+                    {card.countKey === "projects" && (
+                      <span className="mt-2 inline-block text-xs font-medium text-[#1A4A94]">
+                        {counts.projects} items
+                      </span>
+                    )}
+                    {card.countKey === "clients" && (
+                      <span className="mt-2 inline-block text-xs font-medium text-[#1A4A94]">
+                        {counts.clients} items
+                      </span>
+                    )}
+                  </div>
+                  <span className="shrink-0 text-gray-400 group-hover:text-[#1A4A94] transition-colors" aria-hidden>
+                    →
+                  </span>
+                </Link>
+              ))}
             </div>
-            <h2 className="text-lg font-semibold mb-2 text-[#0F2942]">
-              Client Management
-            </h2>
-            <p className="text-gray-600 text-sm">
-              Manage client logos and categorize them.
-            </p>
-          </Link>
-
-          <Link
-            href="/admin/settings"
-            className="card-ret p-6 hover-lift group"
-          >
-            <div className="w-14 h-14 rounded-full flex items-center justify-center mb-4 bg-[#1A4A94]/10 group-hover:bg-[#1A4A94]/15 transition-colors">
-              <svg
-                className="w-7 h-7 text-[#1A4A94]"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-            </div>
-            <h2 className="text-lg font-semibold mb-2 text-[#0F2942]">
-              Site Settings
-            </h2>
-            <p className="text-gray-600 text-sm">
-              Mission, Vision, Office Address, organization chart.
-            </p>
-          </Link>
-        </div>
+          </section>
+        ))}
       </div>
     </div>
   );

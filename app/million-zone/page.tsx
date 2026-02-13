@@ -1,6 +1,7 @@
 import { query } from '@/lib/db'
 import SubsidiaryLayout from '@/components/SubsidiaryLayout'
 import { Building2, Route, Zap } from 'lucide-react'
+import { getPageBanners } from '@/lib/banners'
 
 async function getProjects() {
   try {
@@ -14,7 +15,20 @@ async function getProjects() {
 }
 
 export default async function MillionZonePage() {
-  const projects = await getProjects()
+  const [projects, bannerRows] = await Promise.all([
+    getProjects(),
+    getPageBanners('million-zone'),
+  ])
+
+  const banners =
+    bannerRows.length > 0
+      ? bannerRows.map((b) => ({
+          id: b.id,
+          title: b.title,
+          subtitle: b.subtitle,
+          imageUrl: b.imageUrl,
+        }))
+      : []
 
   return (
     <SubsidiaryLayout
@@ -22,6 +36,7 @@ export default async function MillionZonePage() {
       breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Million Zone', href: '/million-zone' }]}
       heroTitle="Million Zone"
       heroDescription="Leading construction, infrastructure development, and rural electrification services across Myanmar."
+      banners={banners}
       aboutTitle="About Million Zone"
       aboutContent={
         <>

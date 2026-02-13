@@ -49,7 +49,18 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-sans)', 'Open Sans', 'system-ui', 'sans-serif'],
+        serif: ['var(--font-serif)', 'Lora', 'Georgia', 'serif'],
+      },
+      /* Oxford-style type scale (brand colors unchanged) */
+      fontSize: {
+        'ox-h1': ['3rem', { lineHeight: '1.15' }],
+        'ox-h2': ['1.625rem', { lineHeight: '1.25' }],
+        'ox-h3': ['1.3125rem', { lineHeight: '1.3' }],
+      },
+      spacing: {
+        'section': '5rem',
+        'section-sm': '3rem',
       },
       boxShadow: {
         'ret-card': '0 2px 8px rgba(26, 74, 148, 0.06)',

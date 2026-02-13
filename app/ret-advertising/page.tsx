@@ -1,6 +1,7 @@
 import { query } from '@/lib/db'
 import SubsidiaryLayout from '@/components/SubsidiaryLayout'
 import { Image as ImageIcon, Palette, Megaphone } from 'lucide-react'
+import { getPageBanners } from '@/lib/banners'
 
 const portfolioCategories = [
   'Nationwide Merchandising',
@@ -59,7 +60,20 @@ async function getProjects(category?: string) {
 
 export default async function RETAdvertisingPage({ searchParams }: { searchParams: { category?: string } }) {
   const category = searchParams.category || 'All'
-  const projects = await getProjects(category === 'All' ? undefined : category)
+  const [projects, bannerRows] = await Promise.all([
+    getProjects(category === 'All' ? undefined : category),
+    getPageBanners('ret-advertising'),
+  ])
+
+  const banners =
+    bannerRows.length > 0
+      ? bannerRows.map((b) => ({
+          id: b.id,
+          title: b.title,
+          subtitle: b.subtitle,
+          imageUrl: b.imageUrl,
+        }))
+      : []
 
   return (
     <SubsidiaryLayout
@@ -67,6 +81,7 @@ export default async function RETAdvertisingPage({ searchParams }: { searchParam
       breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'RET Advertising', href: '/ret-advertising' }]}
       heroTitle="RET Advertising"
       heroDescription="Delivering exceptional branding, production, and CSR solutions that make a lasting impact."
+      banners={banners}
       categoryFilter={{
         categories: portfolioCategories,
         currentCategory: category,

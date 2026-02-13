@@ -1,6 +1,7 @@
 import Breadcrumbs from "./Breadcrumbs";
 import Link from "next/link";
 import ProjectCardsWithModal, { type ProjectItem } from "./ProjectCardsWithModal";
+import BannerCarousel from "./BannerCarousel";
 
 export const SUBSIDIARY_ACCENTS: Record<string, string> = {
   "RET Advertising": "#FFC107", // Gold
@@ -14,6 +15,12 @@ interface SubsidiaryLayoutProps {
   breadcrumbs: { label: string; href: string }[];
   heroTitle: string;
   heroDescription: string;
+  banners?: {
+    id: string;
+    title?: string | null;
+    subtitle?: string | null;
+    imageUrl: string;
+  }[];
   aboutTitle?: string;
   aboutContent?: React.ReactNode;
   projectsTitle?: string;
@@ -37,6 +44,7 @@ export default function SubsidiaryLayout({
   breadcrumbs,
   heroTitle,
   heroDescription,
+  banners,
   aboutTitle,
   aboutContent,
   projectsTitle = "Our Projects",
@@ -52,20 +60,14 @@ export default function SubsidiaryLayout({
     <div>
       <Breadcrumbs items={breadcrumbs} />
 
-      {/* Hero - Royal Blue, consistent across subsidiaries */}
-      <section className="bg-[#1A4A94] text-white py-16 md:py-20 relative overflow-hidden">
-        <div
-          className="absolute inset-0 hero-pattern opacity-100"
-          aria-hidden
+      {/* Hero - image carousel (default images if none in DB); no blue block on top */}
+      <section className="text-white relative overflow-hidden">
+        <BannerCarousel
+          banners={banners ?? []}
+          defaultTitle={heroTitle}
+          defaultSubtitle={heroDescription}
+          accentColor={accent}
         />
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 relative z-10">
-          <h1 className="text-4xl md:text-5xl font-semibold mb-4 text-white">
-            {heroTitle}
-          </h1>
-          <p className="text-lg md:text-xl text-white/90 max-w-3xl">
-            {heroDescription}
-          </p>
-        </div>
       </section>
 
       {/* About */}

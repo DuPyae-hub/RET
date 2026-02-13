@@ -1,10 +1,20 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Open_Sans, Lora } from 'next/font/google'
 import './globals.css'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
 
-const inter = Inter({ subsets: ['latin'] })
+// Oxford-style typography: clean sans body + classic serif headings. RET brand colors unchanged.
+const openSans = Open_Sans({
+  subsets: ['latin'],
+  variable: '--font-sans',
+  display: 'swap',
+})
+const lora = Lora({
+  subsets: ['latin'],
+  variable: '--font-serif',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: 'Royal Ever True (RET) Business Group',
@@ -18,9 +28,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${openSans.variable} ${lora.variable} ${openSans.className}`}>
+        <a href="#main-content" className="skip-link">Skip to main content</a>
         <Navigation />
-        <main className="min-h-screen">{children}</main>
+        <main id="main-content" className="min-h-screen" tabIndex={-1}>
+          {children}
+        </main>
         <Footer />
       </body>
     </html>

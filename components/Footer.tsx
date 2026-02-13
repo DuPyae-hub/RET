@@ -2,15 +2,16 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#1A4A94] text-white">
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-          {/* Company */}
+    <footer className="bg-[#1A4A94] text-white border-t-2 border-[#FFC107]/40">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-14">
+          {/* Company - Oxford-style column heading */}
           <div>
-            <h3 className="text-base font-semibold mb-4 text-white">
+            <p className="section-label text-white/90 mb-3">About</p>
+            <h3 className="font-serif text-lg font-semibold mb-4 text-white">
               RET Business Group
             </h3>
-            <p className="text-white/80 text-sm leading-relaxed">
+            <p className="text-white/80 text-sm leading-relaxed max-w-xs">
               A leading business conglomerate dedicated to excellence and
               innovation across multiple industries.
             </p>
@@ -18,10 +19,8 @@ export default function Footer() {
 
           {/* Subsidiaries */}
           <div>
-            <h3 className="text-base font-semibold mb-4 text-white">
-              Subsidiaries
-            </h3>
-            <ul className="space-y-2 text-sm">
+            <p className="section-label text-white/90 mb-3">Subsidiaries</p>
+            <ul className="space-y-2.5 text-sm">
               <li>
                 <Link
                   href="/ret-advertising"
@@ -59,10 +58,8 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-base font-semibold mb-4 text-white">
-              Quick Links
-            </h3>
-            <ul className="space-y-2 text-sm">
+            <p className="section-label text-white/90 mb-3">Quick Links</p>
+            <ul className="space-y-2.5 text-sm">
               <li>
                 <Link
                   href="/"
@@ -92,7 +89,8 @@ export default function Footer() {
 
           {/* Head Office */}
           <div>
-            <h3 className="text-base font-semibold mb-4 text-white">
+            <p className="section-label text-white/90 mb-3">Contact</p>
+            <h3 className="font-serif text-lg font-semibold mb-4 text-white">
               Head Office
             </h3>
             <address className="text-white/80 text-sm not-italic mb-4 leading-relaxed">
@@ -141,7 +139,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-white/20 mt-12 pt-8 text-center text-sm text-white/70">
+        <div className="border-t border-white/20 mt-14 pt-8 text-center text-sm text-white/70">
           <p>
             &copy; {new Date().getFullYear()} Royal Ever Truth (RET) Business
             Group. All rights reserved.

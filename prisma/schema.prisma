@@ -72,3 +72,18 @@ model Subsidiary {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
+
+model PageBanner {
+  id        String   @id @default(cuid())
+  pageKey   String
+  title     String?
+  subtitle  String?  @db.Text
+  imageUrl  String
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("PageBanner")
+  @@index([pageKey])
+}

@@ -1,6 +1,7 @@
 import { query } from "@/lib/db";
 import SubsidiaryLayout from "@/components/SubsidiaryLayout";
 import { Smartphone, Wallet, Package } from "lucide-react";
+import { getPageBanners } from "@/lib/banners";
 
 async function getProjects() {
   try {
@@ -14,7 +15,20 @@ async function getProjects() {
 }
 
 export default async function NLTruthPage() {
-  const projects = await getProjects();
+  const [projects, bannerRows] = await Promise.all([
+    getProjects(),
+    getPageBanners("nl-truth"),
+  ]);
+
+  const banners =
+    bannerRows.length > 0
+      ? bannerRows.map((b) => ({
+          id: b.id,
+          title: b.title,
+          subtitle: b.subtitle,
+          imageUrl: b.imageUrl,
+        }))
+      : [];
 
   return (
     <SubsidiaryLayout
@@ -25,6 +39,7 @@ export default async function NLTruthPage() {
       ]}
       heroTitle="NL Truth"
       heroDescription="Your trusted partner in distribution and logistics across Telecom, Online Money, and FMCG sectors."
+      banners={banners}
       aboutTitle="About NL Truth"
       aboutContent={
         <>
